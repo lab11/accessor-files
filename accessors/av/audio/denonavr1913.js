@@ -67,13 +67,13 @@ function* init () {
   // }
 }
 
-function* Power (on) {
+Power.input = function* (on) {
   var cmd_url = get_parameter('device_url') + '/MainZone/index.put.asp';
   yield* rt.http.request(cmd_url, 'POST', null, 'cmd0=PutZone_OnOff/'+(on?'ON':'OFF'), 3000);
   rt.log.debug(on);
 }
 
-function* Volume (volume) {
+Volume.input = function* (volume) {
 	var set_volume = parseFloat(volume) - 80;
 	var cmd_url = get_parameter('device_url') + '/MainZone/index.put.asp';
 	yield* rt.http.request(cmd_url, 'POST', null, 'cmd0=PutMasterVolumeSet/'+set_volume, 3000);
