@@ -9,6 +9,8 @@
  * description can point to it. File that on the todo list.
  */
 
+var currently_locked = true;
+
 function init () {
 
 	// INTERFACES
@@ -16,12 +18,8 @@ function init () {
 		'/lock.Lock': Lock
 	});
 
-	// set_to_locked();
+	currently_locked = true;
 }
-
-// function set_to_locked () {
-// 	set('Lock', true);
-// }
 
 Lock.input = function* (lock) {
 	if (lock) return;
@@ -40,10 +38,19 @@ Lock.input = function* (lock) {
 		yield* s.sendto(pass, [host, port]);
 	} catch (err) {
 		rt.log.error("Failed to send open pacekt: " + err);
-		// set_to_locked();
+		currently_locked = true;
 		return;
 	}
-	// set('Lock', false);
+	currently_locked = false;
 
-	rt.time.run_later(2000, set_to_locked);
+	rt.time.run_later(get_parameter('unlock_time_in_ms', 2000), function () {
+		currently_locked = true;
+	});
+}
+
+Lock.output = function () {
+	// The lock has no queryable interface. It only stays unlocked for 2s though,
+	// so it's a reasonably safe bet that if we didn't unlock it, neither did
+	// anyone else. As such, we emulate the output using only our imperfect knowledge.
+	return currently_locked;
 }
