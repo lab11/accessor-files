@@ -22,3 +22,7 @@ Power.input = function* (state) {
     yield* rt.http.post(post_url, (state)?'color=ffffff':'color=000000');
 }
 
+Power.output = function* () {
+    return '???';
+}
+
