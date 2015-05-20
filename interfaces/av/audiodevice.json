@@ -1,8 +1,8 @@
 {
-	"extends": "/onoff",
+  "extends": "/onoff",
     "ports": {
         "Volume": {
-            "direction": "inout",
+            "directions": ["input", "output"],
             "type": "numeric"
         }
     }
