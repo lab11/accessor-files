@@ -26,12 +26,8 @@ SOURCES = {
 };
 
 function* init () {
-
   // INTERFACES
-
-  provide_interface('/av/videodevice', {
-    'onoff.Power': Power
-  });
+  provide_interface('/av/videodevice');
 
   // PORTS
 
@@ -40,18 +36,6 @@ function* init () {
     type: 'select',
     options: ['VGA', 'HDMI 1', 'HDMI 2', 'S-Video', 'Composite']
   });
-
-  var url = get_parameter('device_url') + '/PJState.xml';
-
-  /* Get the XML status from the receiver */
-  var xml = yield* rt.http.request(url, 'GET', null, '', 3000);
-
-  // val = getXMLValue(xml, 'pjPowermd');
-  // if ((val == POWER_STATES['off']) || (val == POWER_STATES['turning_off'])) {
-  //   set('Power', false);
-  // } else {
-  //   set('Power', true);
-  // }
 }
 
 Power.input = function* (power_setting) {
@@ -63,6 +47,20 @@ Power.input = function* (power_setting) {
     url = get_parameter('device_url') + '/dpjset.cgi?PJ_PowerMode=0';
   }
   yield* rt.http.request(url, 'GET', null, '', 3000);
+}
+
+Power.output = function* () {
+  var url = get_parameter('device_url') + '/PJState.xml';
+
+  /* Get the XML status from the receiver */
+  var xml = yield* rt.http.request(url, 'GET', null, '', 3000);
+
+  val = getXMLValue(xml, 'pjPowermd');
+  if ((val == POWER_STATES['off']) || (val == POWER_STATES['turning_off'])) {
+    return false;
+  } else {
+    return true;
+  }
 }
 
 Input.input = function* (input_setting_choice) {
