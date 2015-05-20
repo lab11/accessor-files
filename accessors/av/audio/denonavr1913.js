@@ -73,11 +73,19 @@ Power.input = function* (on) {
   rt.log.debug(on);
 }
 
+Power.output = function () {
+	throw 'NotImplemented';
+}
+
 Volume.input = function* (volume) {
 	var set_volume = parseFloat(volume) - 80;
 	var cmd_url = get_parameter('device_url') + '/MainZone/index.put.asp';
 	yield* rt.http.request(cmd_url, 'POST', null, 'cmd0=PutMasterVolumeSet/'+set_volume, 3000);
 	rt.log.debug(volume);
+}
+
+Volume.output = function () {
+	throw 'NotImplemented';
 }
 
 Input.input = function* (input_setting_choice) {
