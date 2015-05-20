@@ -28,6 +28,13 @@ function get_bulb_id () {
 	}
 }
 
+function* get_bulb_parameter (param) {
+	var bulbid = get_bulb_id();
+
+	url = get_parameter('bridge_url') + '/api/' + get_parameter('username') + '/lights/' + bulbid + '/state';
+	return yield* rt.http.request(url, 'GET', null, JSON.stringify(params), 3000);
+}
+
 function* set_bulb_parameter (params) {
 	var bulbid = get_bulb_id();
 
@@ -36,13 +43,8 @@ function* set_bulb_parameter (params) {
 }
 
 function* init () {
-	provide_interface('/lighting/light', {
-			'/lighting/light.Power': Power,
-			});
-	provide_interface('/lighting/hue', {
-			'/lighting/rgb.Color': Color,
-			'/lighting/brightness.Brightness': Brightness,
-			});
+	provide_interface('/lighting/light');
+	provide_interface('/lighting/hue');
 
 	create_port('PCB', {type: 'object'});
 
@@ -51,11 +53,15 @@ function* init () {
 	rt.log.debug("Accessor::hue_single init after prefetch (end of init)");
 }
 
-Power.input = function* (on) {
+lighting.light.Power.input = function* (on) {
 	yield* set_bulb_parameter({'on': on});
 }
 
-Color.input = function* (hex_color) {
+lighting.light.Power.output = function* (on) {
+	yield* get_bulb_parameter('on');
+}
+
+lighting.hue.Color.input = function* (hex_color) {
 	var hsv = rt.color.hex_to_hsv(hex_color);
 	params = {'hue': Math.round(hsv.h*182.04),
 	          'sat': Math.round(hsv.s*255),
@@ -63,8 +69,16 @@ Color.input = function* (hex_color) {
 	yield* set_bulb_parameter(params);
 }
 
-Brightness.input = function* (brightness) {
+lighting.hue.Color.output = function* (hex_color) {
+	return '#fff'; // fixme
+}
+
+lighting.hue.Brightness.input = function* (brightness) {
 	yield* set_bulb_parameter({'bri': parseInt(brightness)});
+}
+
+lighting.hue.Brightness.output = function* () {
+	return yield* get_bulb_parameter('bri');
 }
 
 // Control Power, Color, and Brightness in one go.
