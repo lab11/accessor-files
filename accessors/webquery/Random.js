@@ -32,7 +32,7 @@ RandomInteger.output = function* () {
   request_id += 1;
 
   var resp = yield* rt.http.post('https://api.random.org/json-rpc/1/invoke', JSON.stringify(msg));
-  var number = JSON.parse(resp.result.random.data[0]);
+  var number = JSON.parse(resp).result.random.data[0];
 
   return number;
 }
