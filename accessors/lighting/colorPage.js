@@ -21,7 +21,8 @@ function* init () {
 Power.input = function* (state) {
 	var post = (state)?{'color': 'ffffff'}:{'color': '000000'};
     //yield* rt.http.request(post_url, "POST", {'Content-Type': 'application/json'}, JSON.stringify((state)?{'color': 'ffffff'}:{'color': '000000'}), 0);
-    yield* rt.http.post(post_url, {form:post});
+    yield* rt.http.request(post_url, "POST", {'Content-Type': 'application/x-www-form-urlencoded'}, (state)?'color=ffffff':'color=000000', 0);
+    // yield* rt.http.post(post_url, {form:post});
 }
 
 Power.output = function* () {
