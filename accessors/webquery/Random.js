@@ -29,10 +29,10 @@ RandomInteger.output = function* () {
     },
     id: request_id
   };
-
-  // var resp = yield* rt.http.request('https://api.random.org/json-rpc/1/invoke', 'GET', null, msg, 0);
-  var resp = yield* rt.http.post('https://api.random.org/json-rpc/1/invoke', JSON.stringify(msg));
-  rt.log.log(resp);
-
   request_id += 1;
+
+  var resp = yield* rt.http.post('https://api.random.org/json-rpc/1/invoke', JSON.stringify(msg));
+  var number = resp.result.random.data[0];
+
+  return number;
 }
