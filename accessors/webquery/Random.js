@@ -9,30 +9,53 @@
 var API_KEY = '40c37525-22a1-4b69-91ea-ed47b33dc736'
 var request_id = 1;
 
+// var saved_random_ints = [];
+
 function init() {
   create_port('RandomInteger', {
     type: 'numeric',
     min: 0,
     max: 999999
   });
+  create_port('RandomUUID');
 }
 
-RandomInteger.output = function* () {
+function* get_single (method, params) {
   var msg = {
     jsonrpc: '2.0',
-    method: 'generateIntegers',
-    params: {
-      apiKey: API_KEY,
-      n: 1,
-      min: 0,
-      max: 999999
-    },
+    method: method,
+    params: params,
     id: request_id
   };
   request_id += 1;
 
   var resp = yield* rt.http.post('https://api.random.org/json-rpc/1/invoke', JSON.stringify(msg));
-  var number = JSON.parse(resp).result.random.data[0];
+  var val = JSON.parse(resp).result.random.data[0];
 
-  return number;
+  return val;
+}
+
+RandomInteger.output = function* () {
+  var method = 'generateIntegers';
+  var params = {
+      apiKey: API_KEY,
+      n: 1,
+      min: 0,
+      max: 999999
+  };
+
+  return yield* get_single(method, params);
+}
+
+// TODO
+//RandomInteger.observe
+
+RandomUUID.output = function* () {
+  var method = 'generateUUIDs';
+  var params = {
+    apiKey: API_KEY,
+    n: 1
+  };
+
+  return yield* get_single(method, params);
 }
