@@ -40,13 +40,9 @@ Color.input = function* (color) {
   var gi = nearest_offset(g);
   var bi = nearest_offset(b);
 
-  rt.log.debug('ri ' + ri + ' gi ' + gi + ' bi ' + bi);
-
   xt256_color = 16 + (36 * ri) + (6 * gi) + bi;
-
-  rt.log.debug('color ' + xt256_color);
 }
 
 Text.input = function* (text) {
-  rt.log.log('\033[1;'+xt256_color+'m' + text + '\033[0m');
+  rt.log.log('\033[38;5;'+xt256_color+'m' + text + '\033[0m');
 }
