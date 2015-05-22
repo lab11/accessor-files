@@ -4,7 +4,7 @@
 // Command Line Print in Color
 // ===============================
 //
-// Easy way to retrieve random numbers
+// Echos text in the color specified.
 
 var xt256_color = 32;
 
