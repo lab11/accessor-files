@@ -31,7 +31,7 @@ Lock.input = function* (lock) {
 		// set_to_locked();
 		return;
 	}
-	var host = get_parameter('host', '::1');
+	var host = get_parameter('host');
 	var port = get_parameter('port', 4999);
 	var pass = get_parameter('password', 'password');
 	try {
