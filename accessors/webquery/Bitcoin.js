@@ -31,7 +31,6 @@ Transactions.observe = function* () {
   var ws = yield* rt.websocket.connect('wss://ws.blockchain.info/inv');
 
   function ws_data (data) {
-    rt.log.debug('sending data');
     send('Transactions', JSON.parse(data));
   }
 
@@ -44,7 +43,5 @@ Transactions.observe = function* () {
   }
 
   ws.subscribe(ws_data, ws_error, ws_close);
-  rt.log.log(ws);
   ws.send({'op':'unconfirmed_sub'});
-  rt.log.debug('here???')
 }
