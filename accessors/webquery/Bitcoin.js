@@ -15,7 +15,7 @@ var tag = '';
 function* init () {
   create_port('Price', {
     type: 'numeric',
-    unit: 'currency_usd'
+    units: 'currency_usd'
   });
   create_port('Transactions', {
     type: 'object'
