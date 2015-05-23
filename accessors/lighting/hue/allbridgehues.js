@@ -44,7 +44,7 @@ Power.output = function* () {
 	var on = false;
 
 	for (var bulbid in bulbids) {
-		url = get_parameter('bridge_url') + '/api/' + get_parameter('username') + '/lights/' + key;
+		url = get_parameter('bridge_url') + '/api/' + get_parameter('username') + '/lights/' + bulbid;
 		var bulb_state = JSON.parse(yield* rt.http.get(url));
 		if (bulb_state.state.on) {
 			on = true;
@@ -62,8 +62,40 @@ Color.input = function* (hex_color) {
 	yield* on_each(params);
 }
 
+Color.output = function* () {
+	if (bulbids.length > 0) {
+		// There are two cases here.
+		// 1. All the lights are the same color. So we ask the first and
+		//    return its color.
+		// 2. They are not all the same color. Well then who knows what we should
+		//    return so we just return the color of the first light again.
+		url = get_parameter('bridge_url') + '/api/' + get_parameter('username') + '/lights/' + bulbids[0];
+		var bulb_state = JSON.parse(yield* rt.http.get(url));
+		var color = {
+			'h': bulb_state.state.hue / 182.04,
+			's': bulb_state.state.sat / 255,
+			'v': bulb_state.state.bri / 255
+		}
+		return rt.color.hsv_to_hex(color);
+	} else {
+		// Need to return something...
+		return '000000';
+	}
+}
+
 Brightness.input = function* (brightness) {
 	yield* on_each({'bri': parseInt(brightness)});
+}
+
+Brightness.output = function* () {
+	if (bulbids.length > 0) {
+		url = get_parameter('bridge_url') + '/api/' + get_parameter('username') + '/lights/' + bulbids[0];
+		var bulb_state = JSON.parse(yield* rt.http.get(url));
+		return bulb_state.state.bri;
+	} else {
+		// Need to return something...
+		return 0;
+	}
 }
 
 Bridge.output = function* () {
