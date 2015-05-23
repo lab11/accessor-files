@@ -28,11 +28,11 @@ function get_bulb_id () {
 	}
 }
 
-function* get_bulb_parameter (param) {
+function* get_bulb_state () {
 	var bulbid = get_bulb_id();
-
-	url = get_parameter('bridge_url') + '/api/' + get_parameter('username') + '/lights/' + bulbid + '/state';
-	return yield* rt.http.request(url, 'GET', null, JSON.stringify(params), 3000);
+	var url = get_parameter('bridge_url') + '/api/' + get_parameter('username') + '/lights/' + bulbid + '/state';
+	var state = yield* rt.http.get(url);
+	return JSON.parse(state).state;
 }
 
 function* set_bulb_parameter (params) {
@@ -41,6 +41,7 @@ function* set_bulb_parameter (params) {
 	url = get_parameter('bridge_url') + '/api/' + get_parameter('username') + '/lights/' + bulbid + '/state';
 	yield* rt.http.request(url, 'PUT', null, JSON.stringify(params), 3000);
 }
+
 
 function* init () {
 	provide_interface('/lighting/light');
@@ -57,8 +58,9 @@ lighting.light.Power.input = function* (on) {
 	yield* set_bulb_parameter({'on': on});
 }
 
-lighting.light.Power.output = function* (on) {
-	yield* get_bulb_parameter('on');
+lighting.light.Power.output = function* () {
+	var state = yield* get_bulb_state();
+	return state.on;
 }
 
 lighting.hue.Color.input = function* (hex_color) {
@@ -69,8 +71,15 @@ lighting.hue.Color.input = function* (hex_color) {
 	yield* set_bulb_parameter(params);
 }
 
-lighting.hue.Color.output = function* (hex_color) {
-	return '#fff'; // fixme
+lighting.hue.Color.output = function* () {
+	var state = yield* get_bulb_state();
+	var color = {
+		'h': state.hue / 182.04,
+		's': state.sat / 255,
+		'v': state.bri / 255
+	}
+	rt.log.log(color);
+	return rt.color.hsv_to_hex(color);
 }
 
 lighting.hue.Brightness.input = function* (brightness) {
