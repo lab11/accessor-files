@@ -78,7 +78,6 @@ lighting.hue.Color.output = function* () {
 		's': state.sat / 255,
 		'v': state.bri / 255
 	}
-	rt.log.log(color);
 	return rt.color.hsv_to_hex(color);
 }
 
@@ -87,7 +86,8 @@ lighting.hue.Brightness.input = function* (brightness) {
 }
 
 lighting.hue.Brightness.output = function* () {
-	return yield* get_bulb_parameter('bri');
+	var state = yield* get_bulb_state();
+	return state.bri;
 }
 
 // Control Power, Color, and Brightness in one go.
