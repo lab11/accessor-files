@@ -43,8 +43,8 @@ Power.input = function* (on) {
 Power.output = function* () {
 	var on = false;
 
-	for (var bulbid in bulbids) {
-		url = get_parameter('bridge_url') + '/api/' + get_parameter('username') + '/lights/' + bulbid;
+	for (var i=0; i<bulbids.length; i++) {
+		url = get_parameter('bridge_url') + '/api/' + get_parameter('username') + '/lights/' + bulbids[i];
 		var bulb_state = JSON.parse(yield* rt.http.get(url));
 		if (bulb_state.state.on) {
 			on = true;
