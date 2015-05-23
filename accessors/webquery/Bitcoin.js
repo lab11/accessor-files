@@ -28,7 +28,7 @@ Price.output = function* () {
 }
 
 Transactions.observe = function* () {
-  var ws = rt.websocket.connect('wss://ws.blockchain.info/inv');
+  var ws = yield* rt.websocket.connect('wss://ws.blockchain.info/inv');
 
   function ws_data (data) {
     send('Transactions', JSON.parse(data));
