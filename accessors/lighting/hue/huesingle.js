@@ -30,7 +30,7 @@ function get_bulb_id () {
 
 function* get_bulb_state () {
 	var bulbid = get_bulb_id();
-	var url = get_parameter('bridge_url') + '/api/' + get_parameter('username') + '/lights/' + bulbid + '/state';
+	var url = get_parameter('bridge_url') + '/api/' + get_parameter('username') + '/lights/' + bulbid;
 	var state = yield* rt.http.get(url);
 	return JSON.parse(state).state;
 }
