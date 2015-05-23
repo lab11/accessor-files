@@ -44,5 +44,6 @@ Transactions.observe = function* () {
   }
 
   ws.subscribe(ws_data, ws_error, ws_close);
+  rt.log.log(ws);
   ws.send({op:'unconfirmed_sub'});
 }
