@@ -33,7 +33,7 @@ Lock.input = function* (lock) {
 	}
 	var host = get_parameter('host');
 	var port = get_parameter('port', 4999);
-	var pass = get_parameter('password', 'password');
+	var pass = get_parameter('password');
 	try {
 		yield* s.sendto(pass, [host, port]);
 	} catch (err) {
