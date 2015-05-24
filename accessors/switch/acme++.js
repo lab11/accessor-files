@@ -12,12 +12,8 @@ var ip_addr;
 
 function* init () {
 	// INTERFACES
-	provide_interface('/onoff', {
-		'/onoff.Power': PowerControl
-	});
-	provide_interface('/sensor/power', {
-		'/sensor/power.Power': PowerMeter
-	});
+	provide_interface('/onoff');
+	provide_interface('/sensor/power');
 
 	ip_addr = get_parameter('ip_addr');
 
@@ -26,11 +22,11 @@ function* init () {
 	// set('PowerControl', (response == 'true'));
 }
 
-PowerControl.input = function* (state) {
+onoff.Power.input = function* (state) {
 	yield* rt.coap.post('coap://['+ip_addr+']/onoff/Power', (state)?'true':'false');
 
 }
 
-PowerMeter.output = function* () {
+sensor.power.Power.output = function* () {
 	return yield* rt.coap.post('coap://['+ip_addr+']/powermeter/Power');
 }
