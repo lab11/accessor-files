@@ -24,7 +24,11 @@ function* init () {
 
 onoff.Power.input = function* (state) {
 	yield* rt.coap.post('coap://['+ip_addr+']/onoff/Power', (state)?'true':'false');
+}
 
+onoff.Power.output = function* () {
+	var state = yield* rt.coap.get('coap://['+ip_addr+']/onoff/Power');
+	return state == 'true';
 }
 
 sensor.power.Power.output = function* () {
