@@ -32,5 +32,5 @@ onoff.Power.output = function* () {
 }
 
 sensor.power.Power.output = function* () {
-	return yield* rt.coap.post('coap://['+ip_addr+']/powermeter/Power');
+	return yield* rt.coap.get('coap://['+ip_addr+']/powermeter/Power');
 }
