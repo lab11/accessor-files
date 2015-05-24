@@ -16,10 +16,6 @@ function* init () {
 	provide_interface('/sensor/power');
 
 	ip_addr = get_parameter('ip_addr');
-
-	// Initialize the relay power state
-	// var response = yield* rt.coap.get('coap://['+ip_addr+']/onoff/Power');
-	// set('PowerControl', (response == 'true'));
 }
 
 onoff.Power.input = function* (state) {
@@ -28,7 +24,6 @@ onoff.Power.input = function* (state) {
 
 onoff.Power.output = function* () {
 	var val = yield* rt.coap.get('coap://['+ip_addr+']/onoff/Power');
-	rt.log.debug(val);
 	return val == 'true';
 }
 
