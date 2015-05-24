@@ -29,7 +29,7 @@ lighting.light.Power.output = function* () {
 
 lighting.brightness.Brightness.input = function* (brightness) {
 	var bri = Math.round(brightness / 2.55);
-	yield* rt.coap.post('coap://['+ip_addr+']/sdl/luxapose/DutyCycle', bri);
+	yield* rt.coap.post('coap://['+ip_addr+']/sdl/luxapose/DutyCycle', bri.toString());
 }
 
 lighting.brightness.Brightness.output = function* () {
