@@ -9,7 +9,9 @@
 
 function init() {
   // Create a single output observe port to publish data from the queue to.
-  create_port('Data');
+  create_port('Data', {
+    type: 'object'
+  });
 }
 
 function data_callback (val) {
