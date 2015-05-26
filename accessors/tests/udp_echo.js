@@ -11,9 +11,10 @@
  */
 
 var socket;
-var msg;
+var msg = "XXX_NO_MESSAGES_YET_XXX";
 
 function rx_callback(message) {
+	rt.log.debug("RX: " + message);
 	msg = message;
 }
 
