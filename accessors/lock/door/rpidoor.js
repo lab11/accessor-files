@@ -12,11 +12,8 @@
 var currently_locked = true;
 
 function init () {
-
 	// INTERFACES
-	provide_interface('/lock/door', {
-		'/lock.Lock': Lock
-	});
+	provide_interface('/lock/door');
 
 	currently_locked = true;
 }

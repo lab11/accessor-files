@@ -10,9 +10,7 @@
 
 
 function* init () {
-	provide_interface('/lighting/light', {
-		'/onoff/Power': Power
-	});
+	provide_interface('/lighting/light');
 }
 
 Power.input = function* (state) {
@@ -30,12 +28,8 @@ var ip_addr;
 
 function* init () {
 	// INTERFACES
-	provide_interface('/sensor/temperature', {
-		'/sensor/temperature.Temperature': Thermometer
-	});
-	provide_interface('/sensor/light_intensity', {
-		'/sensor/light_intensity.LightIntensity': LightSensor
-	})
+	provide_interface('/sensor/temperature');
+	provide_interface('/sensor/light_intensity');
 
 	ip_addr = get_parameter('ip_addr');
 }

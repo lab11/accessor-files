@@ -20,13 +20,8 @@ function* init () {
 	BradHue = load_dependency('/lighting/hue/huesingle', {bridge_url: url, username: uname, bulb_name: 'Brad'});
 	PatHue = load_dependency('/lighting/hue/huesingle', {bridge_url: url, username: uname, bulb_name: 'Pat'});
 
-	provide_interface('/lighting/light', {
-			'/lighting/light.Power': Power,
-			});
-	provide_interface('/lighting/hue', {
-			'/lighting/rgb.Color': Color,
-			'/lighting/brightness.Brightness': Brightness,
-			});
+	provide_interface('/lighting/light');
+	provide_interface('/lighting/hue');
 }
 
 Power.input = function* (on) {

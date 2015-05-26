@@ -12,9 +12,7 @@ var gatd_url;
 
 function* init () {
 
-	provide_interface('/sensor/power', {
-		'/sensor/power.Power': Power,
-	});
+	provide_interface('/sensor/power');
 
 	var pid = get_parameter('profile_id');
 	var gatd = get_parameter('gatd_url');

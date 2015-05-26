@@ -11,9 +11,7 @@
 var post_url;
 
 function* init () {
-    provide_interface('/lighting/light', {
-        'onoff/Power': Power
-    });
+    provide_interface('/lighting/light');
 
     post_url = get_parameter('post_url');
 }

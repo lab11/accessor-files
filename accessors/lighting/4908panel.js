@@ -10,9 +10,7 @@
 
 
 function* init () {
-	provide_interface('/lighting/light', {
-		'/onoff/Power': Power
-	});
+	provide_interface('/lighting/light');
 }
 
 Power.input = function* (state) {

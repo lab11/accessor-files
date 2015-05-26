@@ -21,10 +21,7 @@ function* init () {
 
   // This audio receiver implements the audio device interface.
   // This essentially means that we can turn it on and off and adjust its volume.
-  provide_interface('/av/audiodevice', {
-    'onoff.Power': Power,
-    'av.audiodevice.Volume': Volume,
-  });
+  provide_interface('/av/audiodevice');
 
   // PORTS
 

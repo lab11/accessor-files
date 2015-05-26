@@ -75,9 +75,7 @@ function* init () {
 
 	// INTERFACES
 
-	provide_interface('/onoff', {
-		'/onoff.Power': Power
-	});
+	provide_interface('/onoff');
 
 	url = get_parameter('wemo_url');
 

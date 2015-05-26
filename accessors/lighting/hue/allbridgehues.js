@@ -18,13 +18,8 @@ function* on_each (body) {
 }
 
 function* init () {
-	provide_interface('/lighting/light', {
-		'/lighting/light.Power': Power,
-	});
-	provide_interface('/lighting/hue', {
-		'/lighting/rgb.Color': Color,
-		'/lighting/brightness.Brightness': Brightness
-	});
+	provide_interface('/lighting/light');
+	provide_interface('/lighting/hue');
 
 	create_port('Bridge');
 
