@@ -20,7 +20,7 @@ function* init () {
 
 function* get_status_page () {
 	var url = get_parameter('url');
-	var html = yield* rt.http.readURL(url + '/status/status.htm');
+	var html = yield* rt.http.get(url + '/status/status.htm');
 	return html;
 }
 
