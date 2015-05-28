@@ -1,4 +1,4 @@
-// title: Failure - no port
+// title: Failure - no author
 // email: bradjc@umich.edu
 
 /* Failure
