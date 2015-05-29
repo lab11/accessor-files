@@ -1,0 +1,69 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE entity PUBLIC "-//UC Berkeley//DTD MoML 1//EN"
+    "http://ptolemy.eecs.berkeley.edu/xml/dtd/MoML_1.dtd">
+<entity name="Print" class="ptolemy.actor.TypedCompositeActor">
+    <property name="_createdBy" class="ptolemy.kernel.attributes.VersionAttribute" value="11.0.devel">
+    </property>
+    <property name="SDF Director" class="ptolemy.domains.sdf.kernel.SDFDirector">
+        <property name="iterations" class="ptolemy.data.expr.Parameter" value="AUTO">
+        </property>
+        <property name="_location" class="ptolemy.kernel.util.Location" value="[-20.0, 20.0]">
+        </property>
+    </property>
+    <property name="Annotation" class="ptolemy.vergil.kernel.attributes.TextAttribute">
+        <property name="text" class="ptolemy.kernel.util.StringAttribute" value="Print&#10;&#10;This is a test accessor that simply prints&#10;a string to the console.">
+        </property>
+        <property name="_location" class="ptolemy.kernel.util.Location" value="[130.0, -10.0]">
+        </property>
+    </property>
+    <property name="_windowProperties" class="ptolemy.actor.gui.WindowPropertiesAttribute" value="{bounds={377, 86, 934, 634}, maximized=false}">
+    </property>
+    <property name="_vergilSize" class="ptolemy.actor.gui.SizeAttribute" value="[700, 524]">
+    </property>
+    <property name="_vergilZoomFactor" class="ptolemy.data.expr.ExpertParameter" value="1.0">
+    </property>
+    <property name="_vergilCenter" class="ptolemy.data.expr.ExpertParameter" value="{203.175048828125, 154.930419921875}">
+    </property>
+    <entity name="StringConst" class="ptolemy.actor.lib.StringConst">
+        <property name="value" class="ptolemy.data.expr.Parameter" value="Hello World">
+        </property>
+        <doc>Create a constant sequence with a string value.</doc>
+        <property name="_icon" class="ptolemy.vergil.icon.BoxedValueIcon">
+            <property name="attributeName" class="ptolemy.kernel.util.StringAttribute" value="value">
+            </property>
+            <property name="displayWidth" class="ptolemy.data.expr.Parameter" value="80">
+            </property>
+            <property name="displayHeight" class="ptolemy.data.expr.Parameter" value="10">
+            </property>
+        </property>
+        <property name="_location" class="ptolemy.kernel.util.Location" value="{75, 200}">
+        </property>
+    </entity>
+    <entity name="Print" class="org.terraswarm.accessor.JSAccessor">
+        <property name="script" class="ptolemy.actor.parameters.PortParameter" value="var rt = {};&#10;rt.log = {};&#10;rt.log.log = print;&#10;rt.log.debug = print;&#10;rt.log.info = print;&#10;rt.log.warn = print;&#10;rt.log.error = print;&#10;rt.log.critical = function (err) {&#10;	print(err);&#10;	throw &quot;This accessor had a critical error. Needs to exit&quot;;&#10;};&#10;&#10;/* The send implementations differ only in argument order, patch */&#10;var _berkeley_send = send;&#10;send = function(a, b) {&#10;	_berkeley_send(b, a);&#10;}&#10;&#10;// name:   Print&#10;// author: Brad Campbell&#10;// email: bradjc@umich.edu&#10;&#10;/* Print Accessor&#10; * ======================&#10; *&#10; * Strictly input, simply prints whatever is received on its port.&#10; */&#10;&#10;&#10;function init () {&#10;	}&#10;&#10;_Print_input = function (content) {&#10;content = get('Print');&#10;	rt.log.log(content);&#10;}&#10;get_parameter = function (param) {&#10;	return get(param);&#10;}&#10;&#10;exports.setup = function() {&#10;	accessor.author('Brad Campbell &lt;bradjc@umich.edu&gt;');&#10;	accessor.version('0.1');&#10;	accessor.description('Print Accessor');&#10;	&#10;	accessor.input('Print', {&#10;		'type': 'string',&#10;	});&#10;	&#10;	&#10;};&#10;&#10;exports.fire = function() {&#10;&#10;};&#10;&#10;exports.initialize = function() {&#10;	print(&quot;INITIALIZE CALLED&quot;);&#10;	addInputHandler(_Print_input, 'Print');&#10;&#10;	if (typeof(init) !== undefined) {&#10;		init();&#10;	}&#10;};&#10;&#10;exports.wrapup = function() {&#10;	print(&quot;WRAPUP CALLED&quot;);&#10;	removeInputHandler(_Print_input, 'Print');&#10;&#10;/* Name conflict; leads to recurision. Nothing we have uses this fn anyway &#10; *&#10;	if (typeof(wrapup) !== undefined) {&#10;		wrapup();&#10;	}&#10; */&#10;};&#10;&#10;">
+        </property>
+        <property name="accessorSource" class="org.terraswarm.accessor.JSAccessor$ActionableAttribute" value="http://localhost:6565/ptolemy//ui/Print.js">
+        </property>
+        <property name="_location" class="ptolemy.kernel.util.Location" value="[240.0, 200.0]">
+        </property>
+        <property name="documentation" class="ptolemy.vergil.basic.DocAttribute">
+            <property name="description" class="ptolemy.kernel.util.StringAttribute" value="Print Accessor">
+            </property>
+            <property name="author" class="ptolemy.kernel.util.StringAttribute" value="Brad Campbell &lt;bradjc@umich.edu&gt;">
+            </property>
+            <property name="version" class="ptolemy.kernel.util.StringAttribute" value="0.1">
+            </property>
+        </property>
+        <port name="Print" class="ptolemy.actor.TypedIOPort">
+            <property name="input"/>
+            <property name="_showName" class="ptolemy.data.expr.SingletonParameter" value="true">
+            </property>
+            <property name="defaultValue" class="ptolemy.data.expr.Parameter">
+            </property>
+        </port>
+    </entity>
+    <relation name="relation" class="ptolemy.actor.TypedIORelation">
+    </relation>
+    <link port="StringConst.output" relation="relation"/>
+    <link port="Print.Print" relation="relation"/>
+</entity>
