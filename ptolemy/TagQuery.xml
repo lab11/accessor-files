@@ -1,0 +1,114 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE entity PUBLIC "-//UC Berkeley//DTD MoML 1//EN"
+    "http://ptolemy.eecs.berkeley.edu/xml/dtd/MoML_1.dtd">
+<entity name="TagQuery" class="ptolemy.actor.TypedCompositeActor">
+    <property name="_createdBy" class="ptolemy.kernel.attributes.VersionAttribute" value="11.0.devel">
+    </property>
+    <property name="SDF Director" class="ptolemy.domains.sdf.kernel.SDFDirector">
+        <property name="iterations" class="ptolemy.data.expr.Parameter" value="AUTO">
+        </property>
+        <property name="_location" class="ptolemy.kernel.util.Location" value="{-35, -50}">
+        </property>
+    </property>
+    <property name="Annotation" class="ptolemy.vergil.kernel.attributes.TextAttribute">
+        <property name="text" class="ptolemy.kernel.util.StringAttribute" value="TagScraper is a demo accessor.&#10;&#10;This accessor will fetch the chosen url&#10;and return the contents (fairly naively)&#10;of the first tag that matches the tag port.">
+        </property>
+        <property name="_location" class="ptolemy.kernel.util.Location" value="[125.0, -70.0]">
+        </property>
+    </property>
+    <property name="_windowProperties" class="ptolemy.actor.gui.WindowPropertiesAttribute" value="{bounds={191, 95, 739, 351}, maximized=false}">
+    </property>
+    <property name="_vergilSize" class="ptolemy.actor.gui.SizeAttribute" value="[505, 241]">
+    </property>
+    <property name="_vergilZoomFactor" class="ptolemy.data.expr.ExpertParameter" value="0.640000000000001">
+    </property>
+    <property name="_vergilCenter" class="ptolemy.data.expr.ExpertParameter" value="{203.59374999999972, 66.99999999999993}">
+    </property>
+    <entity name="StringConst" class="ptolemy.actor.lib.StringConst">
+        <property name="value" class="ptolemy.data.expr.Parameter" value="http://google.com">
+        </property>
+        <doc>Create a constant sequence with a string value.</doc>
+        <property name="_icon" class="ptolemy.vergil.icon.BoxedValueIcon">
+            <property name="attributeName" class="ptolemy.kernel.util.StringAttribute" value="value">
+            </property>
+            <property name="displayWidth" class="ptolemy.data.expr.Parameter" value="80">
+            </property>
+            <property name="displayHeight" class="ptolemy.data.expr.Parameter" value="10">
+            </property>
+        </property>
+        <property name="_location" class="ptolemy.kernel.util.Location" value="[10.0, 135.0]">
+        </property>
+    </entity>
+    <entity name="StringConst2" class="ptolemy.actor.lib.StringConst">
+        <property name="value" class="ptolemy.data.expr.Parameter" value="title">
+        </property>
+        <doc>Create a constant sequence with a string value.</doc>
+        <property name="_icon" class="ptolemy.vergil.icon.BoxedValueIcon">
+            <property name="attributeName" class="ptolemy.kernel.util.StringAttribute" value="value">
+            </property>
+            <property name="displayWidth" class="ptolemy.data.expr.Parameter" value="80">
+            </property>
+            <property name="displayHeight" class="ptolemy.data.expr.Parameter" value="10">
+            </property>
+        </property>
+        <property name="_location" class="ptolemy.kernel.util.Location" value="{-20, 185}">
+        </property>
+    </entity>
+    <entity name="Display" class="ptolemy.actor.lib.gui.Display">
+        <property name="_windowProperties" class="ptolemy.actor.gui.WindowPropertiesAttribute" value="{bounds={590, 421, 499, 208}, maximized=false}">
+        </property>
+        <property name="_paneSize" class="ptolemy.actor.gui.SizeAttribute" value="[499, 164]">
+        </property>
+        <property name="_location" class="ptolemy.kernel.util.Location" value="{420, 140}">
+        </property>
+    </entity>
+    <entity name="TagScraper" class="org.terraswarm.accessor.JSAccessor">
+        <property name="script" class="ptolemy.actor.parameters.PortParameter" value="var rt = {};&#10;rt.log = {};&#10;rt.log.debug = print;&#10;rt.log.info = print;&#10;rt.log.warn = print;&#10;rt.log.error = print;&#10;rt.log.critical = function (err) {&#10;	print(err);&#10;	throw &quot;This accessor had a critical error. Needs to exit&quot;;&#10;};&#10;/* Leverage the deprecated HTTP API to get blocking calls */&#10;rt.http = {};&#10;rt.http.request = httpRequest;&#10;rt.http.get = function (url) {&#10;	return httpRequest(url, 'GET');&#10;};&#10;rt.http.post = function (url, body) {&#10;	return httpRequest(url, 'POST', null, body);&#10;};&#10;rt.http.put = function (url, body) {&#10;	return httpRequest(url, 'PUT', null, body);&#10;};&#10;&#10;&#10;/* The send implementations differ only in argument order, patch */&#10;var _berkeley_send = send;&#10;send = function(a, b) {&#10;	_berkeley_send(b, a);&#10;}&#10;&#10;// author: Brad Campbell&#10;// email: bradjc@umich.edu&#10;&#10;/* Web Tag Scraper&#10; * ======================&#10; *&#10; * Scrape a webpage for the contents of the first tag.&#10; *&#10; * This will retrieve the webpage specified by the URL port&#10; * and scrape the HTML for the first instance of the tag specified&#10; * by the tag port. Do not include &quot;&lt;&gt;&quot; in the tag name.&#10; */&#10;&#10;var url = '';&#10;var tag = '';&#10;&#10;function init () {&#10;    	}&#10;&#10;_URL_input = function (new_url) {&#10;new_url = get('URL');&#10;  url = new_url;&#10;}&#10;&#10;_Tag_input = function (new_tag) {&#10;new_tag = get('Tag');&#10;  tag = new_tag;&#10;}&#10;&#10;_Scrape_output = function () {&#10;  rt.log.debug('URL: ' + url);&#10;  if (url == '') {&#10;    return '';&#10;  }&#10;&#10;  var html =  rt.http.get(url);&#10;  rt.log.debug('HTML: ' + html);&#10;&#10;  var open = '&lt;' + tag + '&gt;';&#10;  var close = '&lt;/' + tag + '&gt;';&#10;&#10;  var start = html.indexOf(open);&#10;  var end = html.indexOf(close, start+open.length);&#10;&#10;  return html.substring(start+open.length, end);&#10;}&#10;get_parameter = function (param) {&#10;	return get(param);&#10;}&#10;&#10;exports.setup = function() {&#10;	accessor.author('Brad Campbell &lt;bradjc@umich.edu&gt;');&#10;	accessor.version('0.1');&#10;	accessor.description('Web Tag Scraper');&#10;	&#10;	accessor.input('URL', {&#10;		'type': 'string',&#10;	});accessor.input('Tag', {&#10;		'type': 'string',&#10;	});&#10;	accessor.output('Scrape', {&#10;		'type': 'string',&#10;	});&#10;	&#10;};&#10;&#10;exports.fire = function() {&#10;	print(&quot;FIRE CALLED&quot;);&#10;	_berkeley_send(_Scrape_output(), 'Scrape');&#10;&#10;};&#10;&#10;exports.initialize = function() {&#10;	print(&quot;INITIALIZE CALLED&quot;);&#10;	addInputHandler(_URL_input, 'URL');&#10;	addInputHandler(_Tag_input, 'Tag');&#10;&#10;	if (typeof(init) !== undefined) {&#10;		init();&#10;	}&#10;};&#10;&#10;exports.wrapup = function() {&#10;	print(&quot;WRAPUP CALLED&quot;);&#10;	removeInputHandler(_URL_input, 'URL');&#10;	removeInputHandler(_Tag_input, 'Tag');&#10;&#10;/* Name conflict; leads to recurision. Nothing we have uses this fn anyway &#10; *&#10;	if (typeof(wrapup) !== undefined) {&#10;		wrapup();&#10;	}&#10; */&#10;};&#10;&#10;">
+        </property>
+        <property name="accessorSource" class="org.terraswarm.accessor.JSAccessor$ActionableAttribute" value="http://localhost:6565/ptolemy//webquery/TagScraper.js">
+        </property>
+        <property name="_location" class="ptolemy.kernel.util.Location" value="[185.0, 145.0]">
+        </property>
+        <property name="documentation" class="ptolemy.vergil.basic.DocAttribute">
+            <property name="description" class="ptolemy.kernel.util.StringAttribute" value="Web Tag Scraper">
+            </property>
+            <property name="author" class="ptolemy.kernel.util.StringAttribute" value="Brad Campbell &lt;bradjc@umich.edu&gt;">
+            </property>
+            <property name="version" class="ptolemy.kernel.util.StringAttribute" value="0.1">
+            </property>
+        </property>
+        <port name="URL" class="ptolemy.actor.TypedIOPort">
+            <property name="input"/>
+            <property name="_showName" class="ptolemy.data.expr.SingletonParameter" value="true">
+            </property>
+            <property name="defaultValue" class="ptolemy.data.expr.Parameter">
+            </property>
+        </port>
+        <port name="Tag" class="ptolemy.actor.TypedIOPort">
+            <property name="input"/>
+            <property name="_showName" class="ptolemy.data.expr.SingletonParameter" value="true">
+            </property>
+            <property name="defaultValue" class="ptolemy.data.expr.Parameter">
+            </property>
+        </port>
+        <port name="Scrape" class="ptolemy.actor.TypedIOPort">
+            <property name="output"/>
+            <property name="_showName" class="ptolemy.data.expr.SingletonParameter" value="true">
+            </property>
+            <property name="defaultValue" class="ptolemy.data.expr.Parameter">
+            </property>
+        </port>
+    </entity>
+    <relation name="relation" class="ptolemy.actor.TypedIORelation">
+    </relation>
+    <relation name="relation2" class="ptolemy.actor.TypedIORelation">
+    </relation>
+    <relation name="relation3" class="ptolemy.actor.TypedIORelation">
+    </relation>
+    <link port="StringConst.output" relation="relation"/>
+    <link port="StringConst2.output" relation="relation2"/>
+    <link port="Display.input" relation="relation3"/>
+    <link port="TagScraper.URL" relation="relation"/>
+    <link port="TagScraper.Tag" relation="relation2"/>
+    <link port="TagScraper.Scrape" relation="relation3"/>
+</entity>
