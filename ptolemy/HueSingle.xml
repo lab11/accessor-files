@@ -1,0 +1,186 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE entity PUBLIC "-//UC Berkeley//DTD MoML 1//EN"
+    "http://ptolemy.eecs.berkeley.edu/xml/dtd/MoML_1.dtd">
+<entity name="HueSingle" class="ptolemy.actor.TypedCompositeActor">
+    <property name="_createdBy" class="ptolemy.kernel.attributes.VersionAttribute" value="11.0.devel">
+    </property>
+    <property name="_windowProperties" class="ptolemy.actor.gui.WindowPropertiesAttribute" value="{bounds={162, 160, 1333, 824}, maximized=false}">
+    </property>
+    <property name="_vergilSize" class="ptolemy.actor.gui.SizeAttribute" value="[1099, 714]">
+    </property>
+    <property name="_vergilZoomFactor" class="ptolemy.data.expr.ExpertParameter" value="1.250000000000001">
+    </property>
+    <property name="_vergilCenter" class="ptolemy.data.expr.ExpertParameter" value="{100.49708393895338, 269.6560138081396}">
+    </property>
+    <property name="enableBackwardTypeInference" class="ptolemy.data.expr.Parameter" value="false">
+    </property>
+    <entity name="StringConst" class="ptolemy.actor.lib.StringConst">
+        <property name="value" class="ptolemy.data.expr.Parameter" value="http://4908hue.eecs.umich.edu">
+        </property>
+        <doc>Create a constant sequence with a string value.</doc>
+        <property name="_icon" class="ptolemy.vergil.icon.BoxedValueIcon">
+            <property name="attributeName" class="ptolemy.kernel.util.StringAttribute" value="value">
+            </property>
+            <property name="displayWidth" class="ptolemy.data.expr.Parameter" value="80">
+            </property>
+            <property name="displayHeight" class="ptolemy.data.expr.Parameter" value="10">
+            </property>
+        </property>
+        <property name="_location" class="ptolemy.kernel.util.Location" value="[195.0, 175.0]">
+        </property>
+    </entity>
+    <entity name="StringConst2" class="ptolemy.actor.lib.StringConst">
+        <property name="value" class="ptolemy.data.expr.Parameter" value="lab11in4908">
+        </property>
+        <doc>Create a constant sequence with a string value.</doc>
+        <property name="_icon" class="ptolemy.vergil.icon.BoxedValueIcon">
+            <property name="attributeName" class="ptolemy.kernel.util.StringAttribute" value="value">
+            </property>
+            <property name="displayWidth" class="ptolemy.data.expr.Parameter" value="80">
+            </property>
+            <property name="displayHeight" class="ptolemy.data.expr.Parameter" value="10">
+            </property>
+        </property>
+        <property name="_location" class="ptolemy.kernel.util.Location" value="[140.0, 215.0]">
+        </property>
+    </entity>
+    <entity name="StringConst3" class="ptolemy.actor.lib.StringConst">
+        <property name="value" class="ptolemy.data.expr.Parameter" value="Pat">
+        </property>
+        <doc>Create a constant sequence with a string value.</doc>
+        <property name="_icon" class="ptolemy.vergil.icon.BoxedValueIcon">
+            <property name="attributeName" class="ptolemy.kernel.util.StringAttribute" value="value">
+            </property>
+            <property name="displayWidth" class="ptolemy.data.expr.Parameter" value="80">
+            </property>
+            <property name="displayHeight" class="ptolemy.data.expr.Parameter" value="10">
+            </property>
+        </property>
+        <property name="_location" class="ptolemy.kernel.util.Location" value="[115.0, 255.0]">
+        </property>
+    </entity>
+    <entity name="StringConst4" class="ptolemy.actor.lib.StringConst">
+        <property name="value" class="ptolemy.data.expr.Parameter" value="00FF00">
+        </property>
+        <doc>Create a constant sequence with a string value.</doc>
+        <property name="_icon" class="ptolemy.vergil.icon.BoxedValueIcon">
+            <property name="attributeName" class="ptolemy.kernel.util.StringAttribute" value="value">
+            </property>
+            <property name="displayWidth" class="ptolemy.data.expr.Parameter" value="80">
+            </property>
+            <property name="displayHeight" class="ptolemy.data.expr.Parameter" value="10">
+            </property>
+        </property>
+        <property name="_location" class="ptolemy.kernel.util.Location" value="{330, 330}">
+        </property>
+    </entity>
+    <entity name="Const2" class="ptolemy.actor.lib.Const">
+        <property name="value" class="ptolemy.data.expr.Parameter" value="255">
+        </property>
+        <doc>Create a constant sequence.</doc>
+        <property name="_icon" class="ptolemy.vergil.icon.BoxedValueIcon">
+            <property name="attributeName" class="ptolemy.kernel.util.StringAttribute" value="value">
+            </property>
+            <property name="displayWidth" class="ptolemy.data.expr.Parameter" value="60">
+            </property>
+        </property>
+        <property name="_location" class="ptolemy.kernel.util.Location" value="[340.0, 370.0]">
+        </property>
+    </entity>
+    <entity name="StringConst5" class="ptolemy.actor.lib.StringConst">
+        <property name="value" class="ptolemy.data.expr.Parameter" value="true">
+        </property>
+        <doc>Create a constant sequence with a string value.</doc>
+        <property name="_icon" class="ptolemy.vergil.icon.BoxedValueIcon">
+            <property name="attributeName" class="ptolemy.kernel.util.StringAttribute" value="value">
+            </property>
+            <property name="displayWidth" class="ptolemy.data.expr.Parameter" value="80">
+            </property>
+            <property name="displayHeight" class="ptolemy.data.expr.Parameter" value="10">
+            </property>
+        </property>
+        <property name="_location" class="ptolemy.kernel.util.Location" value="[205.0, 295.0]">
+        </property>
+    </entity>
+    <entity name="StringToBoolean" class="ptolemy.actor.lib.conversions.StringToBoolean">
+        <property name="_location" class="ptolemy.kernel.util.Location" value="{285, 285}">
+        </property>
+    </entity>
+    <entity name="huesingle" class="org.terraswarm.accessor.JSAccessor">
+        <property name="script" class="ptolemy.actor.parameters.PortParameter" value="print(&quot;LOAD START&quot;);&#10;&#10;var rt = {};&#10;rt.log = {};&#10;rt.log.log = print;&#10;rt.log.debug = print;&#10;rt.log.info = print;&#10;rt.log.warn = print;&#10;rt.log.error = print;&#10;rt.log.critical = function (err) {&#10;	print(err);&#10;	throw &quot;This accessor had a critical error. Needs to exit&quot;;&#10;};&#10;/* Leverage the deprecated HTTP API to get blocking calls */&#10;rt.http = {};&#10;rt.http.request = httpRequest;&#10;rt.http.get = function (url) {&#10;	return httpRequest(url, 'GET');&#10;};&#10;rt.http.post = function (url, body) {&#10;	return httpRequest(url, 'POST', null, body);&#10;};&#10;rt.http.put = function (url, body) {&#10;	return httpRequest(url, 'PUT', null, body);&#10;};&#10;&#10;/* Normally, we use the tinycolor.js library, but it's big so&#10; * pulling in a quick hand-rolled 'close-enough' from&#10; * http://www.cs.rit.edu/~ncs/color/t_convert.html */&#10;rt.color = {};&#10;rt.color.hex_to_hsv = function (RGB) {&#10;	var r, g, b;&#10;	var h, s, v;&#10;&#10;	// Hex RBG to r,g,b [0..1]&#10;	r = parseInt(RGB.slice(0,2)) / 255.0;&#10;	g = parseInt(RGB.slice(2,4)) / 255.0;&#10;	b = parseInt(RGB.slice(4,6)) / 255.0;&#10;&#10;	min = Math.min( r, g, b );&#10;	max = Math.max( r, g, b );&#10;	v = max;				// v&#10;&#10;	delta = max - min;&#10;	if( max != 0 )&#10;		s = delta / max;		// s&#10;	else {&#10;		// r = g = b = 0		// s = 0, v is undefined&#10;		s = 0;&#10;		h = -1;&#10;		return {h: h, s: s, v: v}&#10;	}&#10;	if( r == max )&#10;		h = ( g - b ) / delta;		// between yellow &amp; magenta&#10;	else if( g == max )&#10;		h = 2 + ( b - r ) / delta;	// between cyan &amp; yellow&#10;	else&#10;		h = 4 + ( r - g ) / delta;	// between magenta &amp; cyan&#10;	h *= 60;				// degrees&#10;	if( h &lt; 0 )&#10;		h += 360;&#10;	return {h: h, s: s, v: v}&#10;};&#10;rt.color.hsv_to_hex = function (HSV) {&#10;	var h, s, v;&#10;	var r, g, b;&#10;&#10;	h = HSV.h;&#10;	s = HSV.s;&#10;	v = HSV.v;&#10;&#10;	var i;&#10;	var f, p, q, t;&#10;	if( s == 0 ) {&#10;		// achromatic (grey)&#10;		r = g = b = v;&#10;	} else {&#10;		h /= 60;			// sector 0 to 5&#10;		i = Math.floor( h );&#10;		f = h - i;			// factorial part of h&#10;		p = v * ( 1 - s );&#10;		q = v * ( 1 - s * f );&#10;		t = v * ( 1 - s * ( 1 - f ) );&#10;		switch( i ) {&#10;			case 0:&#10;				r = v;&#10;				g = t;&#10;				b = p;&#10;				break;&#10;			case 1:&#10;				r = q;&#10;				g = v;&#10;				b = p;&#10;				break;&#10;			case 2:&#10;				r = p;&#10;				g = v;&#10;				b = t;&#10;				break;&#10;			case 3:&#10;				r = p;&#10;				g = q;&#10;				b = v;&#10;				break;&#10;			case 4:&#10;				r = t;&#10;				g = p;&#10;				b = v;&#10;				break;&#10;			default:		// case 5:&#10;				r = v;&#10;				g = p;&#10;				b = q;&#10;				break;&#10;		}&#10;	}&#10;&#10;	// Convert r,b,g to &quot;RRGGBB&quot;&#10;	var R = Number(r).toString(16); &#10;	R = R.length == 1 ? &quot;0&quot; + R : R;&#10;	var G = Number(r).toString(16); &#10;	G = G.length == 1 ? &quot;0&quot; + G : G;&#10;	var B = Number(r).toString(16); &#10;	B = B.length == 1 ? &quot;0&quot; + B : B;&#10;&#10;	return R+B+G;&#10;};&#10;&#10;print(&quot;LOAD: RT DONE&quot;);&#10;&#10;&#10;/* The send implementations differ only in argument order, patch */&#10;var _berkeley_send = send;&#10;send = function(a, b) {&#10;	_berkeley_send(b, a);&#10;}&#10;&#10;// name: Hue Single&#10;// author: Brad Campbell&#10;// email: bradjc@umich.edu&#10;//&#10;// Hue Light Bulb&#10;// ==============&#10;//&#10;// This controls a single Hue bulb.&#10;//&#10;//&#10;&#10;var bulb_layout;&#10;&#10;function prefetch_bulb_layout () {&#10;	var url = get_parameter('bridge_url') + '/api/' + get_parameter('username') + '/lights';&#10;	rt.log.debug('Fetching bulb info from bridge');&#10;	bulb_layout = JSON.parse( rt.http.get(url));&#10;	rt.log.debug(bulb_layout);&#10;}&#10;&#10;function get_bulb_id () {&#10;	var name = get_parameter('bulb_name');&#10;&#10;	for (var key in bulb_layout) {&#10;		if (bulb_layout[key].name == name) {&#10;			return key;&#10;		}&#10;	}&#10;}&#10;&#10;function get_bulb_state () {&#10;	var bulbid = get_bulb_id();&#10;	var url = get_parameter('bridge_url') + '/api/' + get_parameter('username') + '/lights/' + bulbid;&#10;	var state =  rt.http.get(url);&#10;	return JSON.parse(state).state;&#10;}&#10;&#10;function set_bulb_parameter (params) {&#10;	var bulbid = get_bulb_id();&#10;&#10;	url = get_parameter('bridge_url') + '/api/' + get_parameter('username') + '/lights/' + bulbid + '/state';&#10;	 rt.http.request(url, 'PUT', null, JSON.stringify(params), 3000);&#10;}&#10;&#10;&#10;function init () {&#10;		&#10;	&#10;	rt.log.debug(&quot;Accessor::hue_single init before prefetch&quot;);&#10;	 prefetch_bulb_layout();&#10;	rt.log.debug(&quot;Accessor::hue_single init after prefetch (end of init)&quot;);&#10;}&#10;&#10;_lighting_light_Power_input = function (on) {&#10;on = get('Power');&#10;	 set_bulb_parameter({'on': on});&#10;}&#10;&#10;_lighting_light_Power_output = function () {&#10;	var state =  get_bulb_state();&#10;	return state.on;&#10;}&#10;&#10;_lighting_hue_Color_input = function (hex_color) {&#10;hex_color = get('Color');&#10;	var hsv = rt.color.hex_to_hsv(hex_color);&#10;	params = {'hue': Math.round(hsv.h*182.04),&#10;	          'sat': Math.round(hsv.s*255),&#10;	          'bri': Math.round(hsv.v*255)}&#10;	 set_bulb_parameter(params);&#10;}&#10;&#10;_lighting_hue_Color_output = function () {&#10;	var state =  get_bulb_state();&#10;	var color = {&#10;		'h': state.hue / 182.04,&#10;		's': state.sat / 255,&#10;		'v': state.bri / 255&#10;	}&#10;	return rt.color.hsv_to_hex(color);&#10;}&#10;&#10;_lighting_hue_Brightness_input = function (brightness) {&#10;brightness = get('Brightness');&#10;	 set_bulb_parameter({'bri': parseInt(brightness)});&#10;}&#10;&#10;_lighting_hue_Brightness_output = function () {&#10;	var state =  get_bulb_state();&#10;	return state.bri;&#10;}&#10;&#10;// Control Power, Color, and Brightness in one go.&#10;// Input to the function is an object that looks like:&#10;// {&#10;//   Power: true|false,&#10;//   Color: 'cc5400',&#10;//   Brightness: 120&#10;// }&#10;_HACK_NO_PCB_input = function (pcb) {&#10;	var p = pcb.Power;&#10;	var c = pcb.Color;&#10;	var hsv = rt.color.hex_to_hsv(c);&#10;	var b = pcb.Brightness;&#10;&#10;	var params = {};&#10;	params['on']  = p;&#10;	params['hue'] = Math.round(hsv.h*182.04);&#10;	params['sat'] = Math.round(hsv.s*255);&#10;	params['bri'] = parseInt(b);&#10;&#10;	 set_bulb_parameter(params);&#10;}&#10;get_parameter = function (param) {&#10;	print(&quot;GETTING PARAMETER &quot; + param);&#10;	return get(param);&#10;}&#10;&#10;exports.setup = function() {&#10;	print(&quot;SETUP&quot;);&#10;	accessor.author('Brad Campbell &lt;bradjc@umich.edu&gt;');&#10;	accessor.version('0.1');&#10;	accessor.description('Hue Light Bulb');&#10;&#10;	accessor.input('bridge_url', {&#10;		'type': 'string',&#10;	});&#10;	accessor.input('username', {&#10;		'type': 'string',&#10;	});&#10;	accessor.input('bulb_name', {&#10;		'type': 'string',&#10;	});&#10;&#10;	accessor.input('Power', {&#10;		'type': 'boolean',&#10;	});&#10;	accessor.input('Color', {&#10;		'type': 'string',&#10;	});&#10;	accessor.input('Brightness', {&#10;		'type': 'number',&#10;	});&#10;&#10;	accessor.output('Power', {&#10;		'type': 'boolean',&#10;	});&#10;	accessor.output('Color', {&#10;		'type': 'string',&#10;	});&#10;	accessor.output('Brightness', {&#10;		'type': 'number',&#10;	});&#10;&#10;&#10;};&#10;&#10;exports.fire = function() {&#10;	print(&quot;FIRE CALLED&quot;);&#10;	_berkeley_send(_lighting_light_Power_output(), '/onoff/Power');&#10;	_berkeley_send(_lighting_hue_Color_output(), '/lighting/rgb/Color');&#10;	_berkeley_send(_lighting_hue_Brightness_output(), '/lighting/brightness/Brightness');&#10;&#10;};&#10;&#10;exports.initialize = function() {&#10;	print(&quot;INITIALIZE CALLED&quot;);&#10;	addInputHandler(_lighting_light_Power_input, 'Power');&#10;	addInputHandler(_lighting_hue_Color_input, 'Color');&#10;	addInputHandler(_lighting_hue_Brightness_input, 'Brightness');&#10;&#10;	if (typeof(init) !== undefined) {&#10;		init();&#10;	}&#10;};&#10;&#10;exports.wrapup = function() {&#10;	print(&quot;WRAPUP CALLED&quot;);&#10;	removeInputHandler(_lighting_light_Power_input, 'Power');&#10;	removeInputHandler(_lighting_hue_Color_input, 'Color');&#10;	removeInputHandler(_lighting_hue_Brightness_input, 'Brightness');&#10;&#10;/* Name conflict; leads to recurision. Nothing we have uses this fn anyway &#10; *&#10;	if (typeof(wrapup) !== undefined) {&#10;		wrapup();&#10;	}&#10; */&#10;};&#10;&#10;&#10;print(&quot;LOAD DONE&quot;);&#10;&#10;">
+        </property>
+        <property name="accessorSource" class="org.terraswarm.accessor.JSAccessor$ActionableAttribute" value="http://accessors.io/ptolemy//lighting/hue/huesingle.js">
+        </property>
+        <property name="_location" class="ptolemy.kernel.util.Location" value="[410.0, 195.0]">
+        </property>
+        <property name="documentation" class="ptolemy.vergil.basic.DocAttribute">
+            <property name="description" class="ptolemy.kernel.util.StringAttribute" value="Hue Light Bulb">
+            </property>
+            <property name="author" class="ptolemy.kernel.util.StringAttribute" value="Brad Campbell &lt;bradjc@umich.edu&gt;">
+            </property>
+            <property name="version" class="ptolemy.kernel.util.StringAttribute" value="0.1">
+            </property>
+        </property>
+        <port name="bridge_url" class="ptolemy.actor.TypedIOPort">
+            <property name="input"/>
+            <property name="_showName" class="ptolemy.data.expr.SingletonParameter" value="true">
+            </property>
+        </port>
+        <port name="username" class="ptolemy.actor.TypedIOPort">
+            <property name="input"/>
+            <property name="_showName" class="ptolemy.data.expr.SingletonParameter" value="true">
+            </property>
+        </port>
+        <port name="bulb_name" class="ptolemy.actor.TypedIOPort">
+            <property name="input"/>
+            <property name="_showName" class="ptolemy.data.expr.SingletonParameter" value="true">
+            </property>
+        </port>
+        <port name="Power" class="ptolemy.actor.TypedIOPort">
+            <property name="input"/>
+            <property name="output"/>
+            <property name="_showName" class="ptolemy.data.expr.SingletonParameter" value="true">
+            </property>
+        </port>
+        <port name="Color" class="ptolemy.actor.TypedIOPort">
+            <property name="input"/>
+            <property name="output"/>
+            <property name="_showName" class="ptolemy.data.expr.SingletonParameter" value="true">
+            </property>
+        </port>
+        <port name="Brightness" class="ptolemy.actor.TypedIOPort">
+            <property name="input"/>
+            <property name="output"/>
+            <property name="_showName" class="ptolemy.data.expr.SingletonParameter" value="true">
+            </property>
+        </port>
+    </entity>
+    <relation name="relation7" class="ptolemy.actor.TypedIORelation">
+    </relation>
+    <relation name="relation" class="ptolemy.actor.TypedIORelation">
+    </relation>
+    <relation name="relation2" class="ptolemy.actor.TypedIORelation">
+    </relation>
+    <relation name="relation3" class="ptolemy.actor.TypedIORelation">
+    </relation>
+    <relation name="relation4" class="ptolemy.actor.TypedIORelation">
+    </relation>
+    <relation name="relation5" class="ptolemy.actor.TypedIORelation">
+    </relation>
+    <relation name="relation6" class="ptolemy.actor.TypedIORelation">
+    </relation>
+    <link port="StringConst.output" relation="relation"/>
+    <link port="StringConst2.output" relation="relation2"/>
+    <link port="StringConst3.output" relation="relation3"/>
+    <link port="StringConst4.output" relation="relation5"/>
+    <link port="Const2.output" relation="relation6"/>
+    <link port="StringConst5.output" relation="relation7"/>
+    <link port="StringToBoolean.input" relation="relation7"/>
+    <link port="StringToBoolean.output" relation="relation4"/>
+    <link port="huesingle.bridge_url" relation="relation"/>
+    <link port="huesingle.username" relation="relation2"/>
+    <link port="huesingle.bulb_name" relation="relation3"/>
+    <link port="huesingle.Power" relation="relation4"/>
+    <link port="huesingle.Color" relation="relation5"/>
+    <link port="huesingle.Brightness" relation="relation6"/>
+</entity>
