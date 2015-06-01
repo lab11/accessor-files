@@ -57,7 +57,7 @@ function* init () {
 		// Save the peripheral we find
 		if (oort_peripheral == null) {
 			rt.log.debug('null peripheral so far')
-			ble_hw.scan_stop();
+			ble_hw.scanStop();
 			oort_peripheral = peripheral;
 
 			// Try to connect to the device if it is disconnected
@@ -75,7 +75,7 @@ function* init () {
 				}
 
 				// Get the sensor service for the device
-				var services = yield* ble_hw.discover_services(
+				var services = yield* ble_hw.discoverServices(
 					peripheral, [OORT_SERVICE_INFO_UUID, OORT_SERVICE_SENSOR_UUID]);
 
 				var index_info = -1;
@@ -93,7 +93,7 @@ function* init () {
 					throw 'Could not find a device info service. Can\'t set date.';
 				}
 
-				var characteristics = yield* ble_hw.discover_characteristics(
+				var characteristics = yield* ble_hw.discoverCharacteristics(
 					services[index_info], [OORT_CHAR_SYSTEMID_UUID]);
 
 				if (characteristics.length === 0) {
@@ -101,7 +101,7 @@ function* init () {
 					throw 'Could not get the System ID characteristic.';
 				}
 
-				var system_id = yield* ble_hw.read_characteristic(characteristics[0]);
+				var system_id = yield* ble_hw.readCharacteristic(characteristics[0]);
 
 				if (index_sensor === -1) {
 					rt.log.error('Could not find sensor service for OORT.');
@@ -109,7 +109,7 @@ function* init () {
 				}
 
 				// Get the characteristics of the sensor service
-				var characteristics = yield* ble_hw.discover_characteristics(services[index_sensor], [OORT_CHAR_CLOCK_UUID, OORT_CHAR_SENSOR_UUID]);
+				var characteristics = yield* ble_hw.discoverCharacteristics(services[index_sensor], [OORT_CHAR_CLOCK_UUID, OORT_CHAR_SENSOR_UUID]);
 
 				for (var i=0; i<characteristics.length; i++) {
 					if (characteristics[i].uuid == OORT_CHAR_CLOCK_UUID) {
@@ -145,9 +145,8 @@ function* init () {
 				tosend.push((cksum >> 8) & 0xFF);
 
 				// var data = new Buffer([0x03, 0xdf, 0x07, 0x05, 0x1c, 0x16, 0x10, 0x2f, 0x8c, 0x03]);
-				var data = new Buffer(tosend);
 				// Set the clock on the device
-				yield* ble_hw.write_characteristic(oort_clock_characteristic, data);
+				yield* ble_hw.writeCharacteristic(oort_clock_characteristic, tosend);
 				rt.log.debug('Successfully set the OORT clock.');
 
 				// Now setup observe because we need that for all data communication
@@ -189,7 +188,7 @@ function* setup_observe () {
 	}
 
 	// Setup the actual notify() callback
-	ble_hw.notify_characteristic(oort_sensor_characteristic, function (data) {
+	ble_hw.notifyCharacteristic(oort_sensor_characteristic, function (data) {
 		LK_power   = data[0] == 0x1;
 		LK_voltage = convert_oort_to_float(data.slice(1,4));
 		LK_current = convert_oort_to_float(data.slice(4,7));
@@ -213,7 +212,7 @@ Power.input = function* (state) {
 		throw 'No connected OORT. Cannot write.';
 	}
 	var val = (state) ? 0x1 : 0x0;
-	yield* ble_hw.write_characteristic(oort_clock_characteristic, new Buffer([0x4, 0x1]));
+	yield* ble_hw.writeCharacteristic(oort_clock_characteristic, [0x4, 0x1]);
 }
 
 function any_output (val) {
