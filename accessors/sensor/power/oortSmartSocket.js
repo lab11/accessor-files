@@ -41,13 +41,12 @@ function* init () {
 
 	// Get a handle to the hardware
 	ble_hw = yield* rt.ble.Client();
-	// rt.ble.Client();
 
 	// Using BLE may fail
-	// if (ble_hw === null) {
-	// 	rt.log.error('Unable to get access to a BLE device.');
-	// 	return;
-	// }
+	if (ble_hw === null) {
+		rt.log.error('Unable to get access to a BLE device.');
+		return;
+	}
 
 	// Start the scan for any devices that advertise the OORT sensor
 	// service.
