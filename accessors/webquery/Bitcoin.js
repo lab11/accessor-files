@@ -1,12 +1,12 @@
-// author: Brad Campbell
-// email: bradjc@umich.edu
-
 /* Bitcoin Accessor
  * ======================
  *
  * Get information about Bitcoin.
  *
  * See https://blockchain.info/api/api_websocket for info on the API.
+ *
+ * @module webquery/Bitcoin
+ * @author Brad Campbell <bradjc@umich.edu>
  */
 
 var http = require('httpClient');

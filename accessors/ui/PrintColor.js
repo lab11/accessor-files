@@ -1,10 +1,12 @@
-// author:  Brad Campbell
-// email:   bradjc@umich.edu
-//
-// Command Line Print in Color
-// ===============================
-//
-// Echos text in the color specified.
+/**
+ * Command Line Print in Color
+ * ===========================
+ *
+ * Strictly input, simply prints whatever is received on its port.
+ *
+ * @module ui/PrintColor
+ * @author Brad Campbell <bradjc@umich.edu>
+ */
 
 var xt256_color = 32;
 

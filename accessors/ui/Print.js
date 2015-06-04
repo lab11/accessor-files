@@ -1,11 +1,11 @@
-// name:   Print
-// author: Brad Campbell
-// email: bradjc@umich.edu
-
-/* Print Accessor
+/**
+ * Print Accessor
  * ======================
  *
  * Strictly input, simply prints whatever is received on its port.
+ *
+ * @module ui/Print
+ * @author Brad Campbell <bradjc@umich.edu>
  */
 
 

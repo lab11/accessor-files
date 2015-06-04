@@ -1,11 +1,13 @@
-// author:  Edward A. Lee
-// email:   eal@eecs.berkeley.edu
-//
-// Stock Price Lookup Accessor
-// ===========================
-//
-// This accessor, when fired, reads the most recent bid price for the specified
-// stock symbol from a Yahoo server.
+/**
+ * Stock Price Lookup Accessor
+ * ===========================
+ *
+ * This accessor, when fired, reads the most recent bid price for the specified
+ * stock symbol from a Yahoo server.
+ *
+ * @module webquery/StockTick
+ * @author Edward A. Lee <eal@eecs.berkeley.edu>
+ */
 
 var stock_symbol = 'YHOO';
 
