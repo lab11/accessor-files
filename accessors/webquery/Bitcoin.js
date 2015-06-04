@@ -12,9 +12,6 @@
 var http = require('httpClient');
 var websocket = require('webSocket');
 
-var url = '';
-var tag = '';
-
 function* init () {
   createPort('Price', {
     type: 'numeric',
@@ -31,9 +28,8 @@ Price.output = function* () {
 }
 
 Transactions.observe = function* () {
-
   var ws = new websocket.Client('wss://ws.blockchain.info/inv');
-console.log('here???')
+
   ws.on('message', function (data, flags) {
     send('Transactions', JSON.parse(data));
   });

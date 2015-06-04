@@ -6,18 +6,20 @@
 //
 // Easy way to retrieve random numbers
 
+var http = require('httpClient');
+
 var API_KEY = '40c37525-22a1-4b69-91ea-ed47b33dc736'
 var request_id = 1;
 
 // var saved_random_ints = [];
 
 function init() {
-  create_port('RandomInteger', {
+  createPort('RandomInteger', {
     type: 'numeric',
     min: 0,
     max: 999999
   });
-  create_port('RandomUUID');
+  createPort('RandomUUID');
 }
 
 function* get_single (method, params) {
@@ -29,8 +31,8 @@ function* get_single (method, params) {
   };
   request_id += 1;
 
-  var resp = yield* rt.http.post('https://api.random.org/json-rpc/1/invoke', JSON.stringify(msg));
-  var val = JSON.parse(resp).result.random.data[0];
+  var resp = yield* http.post('https://api.random.org/json-rpc/1/invoke', JSON.stringify(msg));
+  var val = JSON.parse(resp.body).result.random.data[0];
 
   return val;
 }
