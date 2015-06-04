@@ -1,12 +1,13 @@
-// name:   Torch / SDL Lights
-// author: Brad Campbell
-// email:  bradjc@umich.edu
-
-// Torch
-// ======
-//
-// Torch is part of the SDL platform for controlling LEDs.
-//
+/**
+ * Torch
+ * ======
+ *
+ * Torch is part of the SDL platform for controlling LEDs.
+ *
+ * @module
+ * @display-name Torch / SDL Lights
+ * @author Brad Campbell <bradjc@umich.edu>
+ */
 
 var coap = require('coapClient');
 

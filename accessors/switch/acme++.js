@@ -1,12 +1,12 @@
-// name: ACme++
-// author: Brad Campbell
-// email:  bradjc@umich.edu
-
-// ACme++
-// ======
-//
-// ACme++ (AC Meter ++) is a power meter with an included relay.
-//
+/**
+ * ACme++
+ * ======
+ *
+ * ACme++ (AC Meter ++) is a power meter with an included relay.
+ *
+ * @module
+ * @author Brad Campbell <bradjc@umich.edu>
+ */
 
 var ip_addr;
 

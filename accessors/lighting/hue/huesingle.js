@@ -1,13 +1,13 @@
-// name: Hue Single
-// author: Brad Campbell
-// email: bradjc@umich.edu
-//
-// Hue Light Bulb
-// ==============
-//
-// This controls a single Hue bulb.
-//
-//
+/**
+ * Hue Light Bulb
+ * ==============
+ *
+ * This controls a single Hue bulb.
+ *
+ * @module
+ * @display-name Hue Single
+ * @author Brad Campbell <bradjc@umich.edu>
+ */
 
 var http = require('httpClient');
 var color = require('color');

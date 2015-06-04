@@ -1,11 +1,12 @@
-// name:   4908 Panel Lights
-// author: Brad Campbell
-// email: bradjc@umich.edu
-
-/* Light Control for 4908
- * ======================
+/**
+ * Light Control for 4908 Panel Lights
+ * ===================================
  *
  * Use GATD to control the panel lights in 4908.
+ *
+ * @module
+ * @display-name 4908 Panel Lights
+ * @author Brad Campbell <bradjc@umich.edu>
  */
 
 

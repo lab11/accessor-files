@@ -1,12 +1,13 @@
-// name: Brad-Pat Hue
-// author: Brad Campbell
-// email: bradjc@umich.edu
-//
-// Hue Bulbs for Brad and Pat
-// ================================
-//
-// This is an example of a meta-accessor.
-//
+/**
+ * Hue Bulbs for Brad and Pat
+ * ==========================
+ *
+ * This is an example of a meta-accessor.
+ *
+ * @module
+ * @display-name Brad-Pat Hue
+ * @author Brad Campbell <bradjc@umich.edu>
+ */
 
 var BradHue;
 var PatHue;

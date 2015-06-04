@@ -1,12 +1,13 @@
-// name: Denon AVR-1913
-// author: Brad Campbell
-// email: bradjc@umich.edu
-//
-// Denon AVR-1913 Accessor
-// =======================
-//
-// The Denon AVR-1913 is a digital receiver.
-//
+/**
+ * Denon AVR-1913 Accessor
+ * =======================
+ *
+ * The Denon AVR-1913 is a digital receiver.
+ *
+ * @display-name Denon AVR-1913
+ * @module av/audio/denonavr1913
+ * @author Brad Campbell <bradjc@umich.edu>
+ */
 
 var receiver_url;
 

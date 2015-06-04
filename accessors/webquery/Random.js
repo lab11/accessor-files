@@ -1,10 +1,12 @@
-// author:  Brad Campbell
-// email:   bradjc@umich.edu
-//
-// Accessor for the Random.org API
-// ===============================
-//
-// Easy way to retrieve random numbers
+/**
+ * Accessor for the Random.org API
+ * ===============================
+ *
+ * Easy way to retrieve random numbers
+ *
+ * @module
+ * @author Brad Campbell <bradjc@umich.edu>
+ */
 
 var http = require('httpClient');
 

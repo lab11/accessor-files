@@ -1,12 +1,11 @@
-// name:   Say
-// author: Pat Pannuto
-// email:  ppannuto@umich.edu
-
-/* Say Accessor
+/**
+ * Say Accessor
  * ============
  *
  * Strictly input, speaks aloud whatever is received on its port.
+ * @author Pat Pannuto <ppannuto@umich.edu>
  */
+
 
 
 function* init () {

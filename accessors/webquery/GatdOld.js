@@ -1,9 +1,10 @@
-// author:  Brad Campbell
-// email:   bradjc@umich.edu
-//
-// Pull From GATDv0.1
-// ===========================
-//
+/**
+ * Pull From GATDv0.1
+ * ===========================
+ *
+ * @module
+ * @author Brad Campbell <bradjc@umich.edu>
+ */
 
 var gatd_conn;
 

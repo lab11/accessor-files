@@ -1,13 +1,10 @@
-/* A Wearabouts Accessor
- *
- *  author: Brad Campbell
- *   email: bradjc@umich.edu
- * website: bradcampbell.com
- *
+/**
  * Wearabouts Accessor
- * ===========================
+ * ===================
  *
  * Get list of people in the room.
+ *
+ * @author Brad Campbell <bradjc@umich.edu>
  */
 
 function* init () {

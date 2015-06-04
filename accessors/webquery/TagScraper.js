@@ -1,7 +1,5 @@
-// author: Brad Campbell
-// email: bradjc@umich.edu
-
-/* Web Tag Scraper
+/**
+ * Web Tag Scraper
  * ======================
  *
  * Scrape a webpage for the contents of the first tag.
@@ -9,6 +7,9 @@
  * This will retrieve the webpage specified by the URL port
  * and scrape the HTML for the first instance of the tag specified
  * by the tag port. Do not include "<>" in the tag name.
+ *
+ * @module
+ * @author Brad Campbell <bradjc@umich.edu>
  */
 
 var url = '';

@@ -1,11 +1,12 @@
-// name: WeMo
-// author: Brad Campbell
-// email: bradjc@umich.edu
-
-/* Control WeMo
+/**
+ * Control WeMo
  * ============
  * WeMo is a WiFi controlled relay device.
+ *
+ * @module
+ * @author Brad Campbell <bradjc@umich.edu>
  */
+
 
 var set_body = '<?xml version="1.0" encoding="utf-8"?>\
 <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">\

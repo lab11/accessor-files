@@ -1,14 +1,15 @@
-// name: InFocus Projector
-// author: Pat Pannuto
-// email: ppannuto@umich.edu
-//
-// InFocus Projector Accessor
-// ==========================
-//
-// InFocus makes projectors. This accessor works for the model in our lab (whose
-// actual model number is surprisingly difficult to ascertain) and may well work
-// for other InFocus projectors.
-//
+/**
+ * InFocus Projector Accessor
+ * ==========================
+ *
+ * InFocus makes projectors. This accessor works for the model in our lab (whose
+ * actual model number is surprisingly difficult to ascertain) and may well work
+ * for other InFocus projectors.
+ *
+ * @module
+ * @display-name InFocus Projector
+ * @author Pat Pannuto <ppannuto@umich.edu>
+ */
 
 POWER_STATES = {
   'off' : 0,

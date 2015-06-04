@@ -1,12 +1,13 @@
-// name: Oort Smart Socket
-// email: bradjc@umich.edu
-// author: Brad Campbell
-//
-// Oort Smart Socket
-// =================
-//
-// BLE power meter and load switch.
-//
+/**
+ * Oort Smart Socket
+ * =================
+ *
+ * BLE power meter and load switch.
+ *
+ * @module
+ * @display-name Oort Smart Socket
+ * @author: Brad Campbell <bradjc@umich.edu>
+ */
 
 var OORT_SERVICE_INFO_UUID = '180a';
 var OORT_SERVICE_SENSOR_UUID = '0000fee0494c4f474943544543480000';

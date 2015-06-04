@@ -1,12 +1,13 @@
-// name: All Hues on a Bridge
-// author: Brad Campbell
-// email: bradjc@umich.edu
-//
-// Hue Light Bulbs
-// ===============
-//
-// This controls all of the hues behind a bridge.
-//
+/**
+ * Hue Light Bulbs
+ * ===============
+ *
+ * This controls all of the hues behind a bridge.
+ *
+ * @module
+ * @display-name All Hues on a Bridge
+ * @author Brad Campbell <bradjc@umich.edu>
+ */
 
 var bulbids = [];
 

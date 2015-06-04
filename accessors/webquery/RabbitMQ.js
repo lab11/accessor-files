@@ -1,11 +1,13 @@
-// author:  Brad Campbell
-// email:   bradjc@umich.edu
-//
-// Pull From a RabbitMQ Exchange
-// ===========================
-//
-// This accessor connects to a RabbitMQ exchange and outputs data from the
-// connected queue to the observe port.
+/**
+ * Pull From a RabbitMQ Exchange
+ * =============================
+ *
+ * This accessor connects to a RabbitMQ exchange and outputs data from the
+ * connected queue to the observe port.
+ *
+ * @module
+ * @author Brad Campbell <bradjc@umich.edu>
+ */
 
 function init() {
   // Create a single output observe port to publish data from the queue to.
