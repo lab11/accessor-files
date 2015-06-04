@@ -4,6 +4,7 @@
  *
  * Get list of people in the room.
  *
+ * @module
  * @author Brad Campbell <bradjc@umich.edu>
  */
 
