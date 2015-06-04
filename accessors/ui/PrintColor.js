@@ -8,11 +8,11 @@
 
 var xt256_color = 32;
 
-function init() {
-  create_port('Color', {
+function setup() {
+  createPort('Color', {
     type: 'color'
   });
-  create_port('Text');
+  createPort('Text');
 }
 
 // Find the xterm-256 value that is closest to the color channel
@@ -44,5 +44,5 @@ Color.input = function* (color) {
 }
 
 Text.input = function* (text) {
-  rt.log.log('\033[38;5;'+xt256_color+'m' + text + '\033[0m');
+  console.log('\033[38;5;'+xt256_color+'m' + text + '\033[0m');
 }
