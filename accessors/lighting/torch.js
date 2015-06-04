@@ -8,31 +8,33 @@
 // Torch is part of the SDL platform for controlling LEDs.
 //
 
+var coap = require('coapClient');
+
 var ip_addr;
 
 function* init () {
 	// INTERFACES
-	provide_interface('/lighting/light');
-	provide_interface('/lighting/brightness');
+	provideInterface('/lighting/light');
+	provideInterface('/lighting/brightness');
 
-	ip_addr = get_parameter('ip_addr');
+	ip_addr = getParameter('ip_addr');
 }
 
 lighting.light.Power.input = function* (state) {
-	yield* rt.coap.post('coap://['+ip_addr+']/onoff/Power', (state)?'true':'false');
+	yield* coap.post('coap://['+ip_addr+']/onoff/Power', (state)?'true':'false');
 }
 
 lighting.light.Power.output = function* () {
-	var val = yield* rt.coap.get('coap://['+ip_addr+']/onoff/Power');
+	var val = (yield* coap.get('coap://['+ip_addr+']/onoff/Power')).payload.toString('utf-8');
 	return val == 'true';
 }
 
 lighting.brightness.Brightness.input = function* (brightness) {
 	var bri = Math.round(brightness / 2.55);
-	yield* rt.coap.post('coap://['+ip_addr+']/sdl/luxapose/DutyCycle', bri.toString());
+	yield* coap.post('coap://['+ip_addr+']/sdl/luxapose/DutyCycle', bri.toString());
 }
 
 lighting.brightness.Brightness.output = function* () {
-	var bri = parseInt(yield* rt.coap.get('coap://['+ip_addr+']/sdl/luxapose/DutyCycle'));
+	var bri = parseInt((yield* coap.get('coap://['+ip_addr+']/sdl/luxapose/DutyCycle')).payload.toString('utf-8'));
 	return bri * 2.55;
 }

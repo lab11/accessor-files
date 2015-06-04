@@ -9,18 +9,20 @@
  * Get information from the printer.
  */
 
+var http = require('httpClient');
+
 function* init () {
-	create_port('Cyan');
-	create_port('Magenta');
-	create_port('Yellow');
-	create_port('Black');
-	create_port('Waste');
-	create_port('Tray1');
+	createPort('Cyan');
+	createPort('Magenta');
+	createPort('Yellow');
+	createPort('Black');
+	createPort('Waste');
+	createPort('Tray1');
 }
 
 function* get_status_page () {
-	var url = get_parameter('url');
-	var html = yield* rt.http.get(url + '/status/status.htm');
+	var url = getParameter('url');
+	var html = (yield* http.get(url + '/status/status.htm')).body;
 	return html;
 }
 
@@ -28,9 +30,9 @@ function* get_status_page () {
 // It should be replaced later.
 function find_in_page (page, field) {
 	var start = page.indexOf(field);
-	rt.log.debug('start: ' + start);
+	console.info('start: ' + start);
 	var end_tag = page.indexOf('/', start+field.length+2) - 1;
-	rt.log.debug('end_tag: ' + end_tag);
+	console.info('end_tag: ' + end_tag);
 
 	// Search for the ">" symbol
 	var start_tag = 0;
@@ -41,7 +43,7 @@ function find_in_page (page, field) {
 			break;
 		}
 	}
-	rt.log.debug('start tag: ' + start_tag);
+	console.info('start tag: ' + start_tag);
 
 	return page.substr(start_tag, end_tag-start_tag);
 }
@@ -49,41 +51,41 @@ function find_in_page (page, field) {
 Cyan.output = function*  () {
 	var status_html = yield* get_status_page();
 	var status = find_in_page(status_html, 'Cyan Drum Cartridge');
-	rt.log.log(status);
+	console.log(status);
 	return status;
 }
 
 Magenta.output = function* () {
 	var status_html = yield* get_status_page();
 	var status = find_in_page(status_html, 'Magenta Drum Cartridge');
-	rt.log.log(status);
+	console.log(status);
 	return status;
 }
 
 Yellow.output = function* () {
 	var status_html = yield* get_status_page();
 	var status = find_in_page(status_html, 'Yellow Drum Cartridge');
-	rt.log.log(status);
+	console.log(status);
 	return status;
 }
 
 Black.output = function* () {
 	var status_html = yield* get_status_page();
 	var status = find_in_page(status_html, 'Black Drum Cartridge');
-	rt.log.log(status);
+	console.log(status);
 	return status;
 }
 
 Waste.output = function* () {
 	var status_html = yield* get_status_page();
 	var status = find_in_page(status_html, 'Waste Toner Box');
-	rt.log.log(status);
+	console.log(status);
 	return status;
 }
 
 Tray1.output = function* () {
 	var status_html = yield* get_status_page();
 	var status = find_in_page(status_html, '35%>Output Tray');
-	rt.log.log(status);
+	console.log(status);
 	return status;
 }

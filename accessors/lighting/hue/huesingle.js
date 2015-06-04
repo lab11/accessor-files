@@ -17,14 +17,14 @@ var bulb_layout;
 
 
 function* prefetch_bulb_layout () {
-	var url = get_parameter('bridge_url') + '/api/' + get_parameter('username') + '/lights';
+	var url = getParameter('bridge_url') + '/api/' + getParameter('username') + '/lights';
 	console.info('Fetching bulb info from bridge');
 	bulb_layout = JSON.parse((yield* http.get(url)).body);
 	console.info(bulb_layout);
 }
 
 function get_bulb_id () {
-	var name = get_parameter('bulb_name');
+	var name = getParameter('bulb_name');
 
 	for (var key in bulb_layout) {
 		if (bulb_layout[key].name == name) {
@@ -35,7 +35,7 @@ function get_bulb_id () {
 
 function* get_bulb_state () {
 	var bulbid = get_bulb_id();
-	var url = get_parameter('bridge_url') + '/api/' + get_parameter('username') + '/lights/' + bulbid;
+	var url = getParameter('bridge_url') + '/api/' + getParameter('username') + '/lights/' + bulbid;
 	var state = (yield* http.get(url)).body;
 	return JSON.parse(state).state;
 }
@@ -43,7 +43,7 @@ function* get_bulb_state () {
 function* set_bulb_parameter (params) {
 	var bulbid = get_bulb_id();
 
-	url = get_parameter('bridge_url') + '/api/' + get_parameter('username') + '/lights/' + bulbid + '/state';
+	url = getParameter('bridge_url') + '/api/' + getParameter('username') + '/lights/' + bulbid + '/state';
 	// yield* http.request(url, 'PUT', null, JSON.stringify(params), 3000);
 	yield* http.put(url, JSON.stringify(params));
 }
