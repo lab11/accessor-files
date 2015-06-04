@@ -9,39 +9,44 @@
  * See https://blockchain.info/api/api_websocket for info on the API.
  */
 
+var http = require('httpClient');
+var websocket = require('webSocket');
+
 var url = '';
 var tag = '';
 
 function* init () {
-  create_port('Price', {
+  createPort('Price', {
     type: 'numeric',
     units: 'currency_usd'
   });
-  create_port('Transactions', {
+  createPort('Transactions', {
     type: 'object'
   });
 }
 
 Price.output = function* () {
-  var ticker = yield* rt.http.get('https://blockchain.info/ticker');
-  return parseFloat(JSON.parse(ticker).USD.last).toFixed(2);
+  var ticker = yield* http.get('https://blockchain.info/ticker');
+  return parseFloat(JSON.parse(ticker.body).USD.last).toFixed(2);
 }
 
 Transactions.observe = function* () {
-  var ws = yield* rt.websocket.connect('wss://ws.blockchain.info/inv');
 
-  function ws_data (data) {
+  var ws = new websocket.Client('wss://ws.blockchain.info/inv');
+console.log('here???')
+  ws.on('message', function (data, flags) {
     send('Transactions', JSON.parse(data));
-  }
+  });
 
-  function ws_error (err) {
-    rt.log.error(err);
-  }
+  ws.on('error', function (err) {
+    console.error(err);
+  });
 
-  function ws_close () {
-    rt.log.warn('WebSocket connection closed.');
-  }
+  ws.on('close', function () {
+    console.warn('btc websocket closed.');
+  });
 
-  ws.subscribe(ws_data, ws_error, ws_close);
-  ws.send(JSON.stringify({'op':'unconfirmed_sub'}));
+  ws.on('open', function () {
+    ws.send(JSON.stringify({'op':'unconfirmed_sub'}));
+  });
 }
