@@ -12,13 +12,19 @@
  * @author Brad Campbell <bradjc@umich.edu>
  */
 
+var http = require('httpClient');
+
 var url = '';
 var tag = '';
 
+function setup () {
+  createPort('URL');
+  createPort('Tag');
+  createPort('Scrape');
+}
+
 function* init () {
-  create_port('URL');
-  create_port('Tag');
-	create_port('Scrape');
+
 }
 
 URL.input = function* (new_url) {
@@ -30,13 +36,13 @@ Tag.input = function* (new_tag) {
 }
 
 Scrape.output = function* () {
-  rt.log.debug('URL: ' + url);
+  console.info('URL: ' + url);
   if (url == '') {
     return '';
   }
 
-  var html = yield* rt.http.get(url);
-  rt.log.debug('HTML: ' + html);
+  var html = (yield* http.get(url)).body;
+  // console.info('HTML: ' + html);
 
   var open = '<' + tag + '>';
   var close = '</' + tag + '>';

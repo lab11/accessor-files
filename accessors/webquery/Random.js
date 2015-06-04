@@ -16,7 +16,7 @@ var request_id = 1;
 // var saved_random_ints = [];
 
 function setup () {
-    createPort('RandomInteger', {
+  createPort('RandomInteger', {
     type: 'numeric',
     min: 0,
     max: 999999
