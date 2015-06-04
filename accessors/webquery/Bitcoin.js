@@ -1,4 +1,5 @@
-/* Bitcoin Accessor
+/**
+ * Bitcoin Accessor
  * ======================
  *
  * Get information about Bitcoin.
