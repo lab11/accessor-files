@@ -13,13 +13,17 @@ var request_id = 1;
 
 // var saved_random_ints = [];
 
-function init() {
-  createPort('RandomInteger', {
+function setup () {
+    createPort('RandomInteger', {
     type: 'numeric',
     min: 0,
     max: 999999
   });
   createPort('RandomUUID');
+}
+
+function init () {
+
 }
 
 function* get_single (method, params) {
