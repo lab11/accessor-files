@@ -5,9 +5,11 @@
  * BLE power meter and load switch.
  *
  * @module
+ * @author Brad Campbell <bradjc@umich.edu>
  * @display-name Oort Smart Socket
- * @author: Brad Campbell <bradjc@umich.edu>
  */
+
+var ble = require('ble');
 
 var OORT_SERVICE_INFO_UUID = '180a';
 var OORT_SERVICE_SENSOR_UUID = '0000fee0494c4f474943544543480000';
@@ -33,19 +35,19 @@ var LK_freq    = null;
 
 function* init () {
 	// provide_interface('/onoff');
-	create_port('Power');
-	create_port('Voltage');
-	create_port('Current');
-	create_port('Watts');
-	create_port('PowerFactor');
-	create_port('Frequency');
+	createPort('Power');
+	createPort('Voltage');
+	createPort('Current');
+	createPort('Watts');
+	createPort('PowerFactor');
+	createPort('Frequency');
 
 	// Get a handle to the hardware
-	ble_hw = yield* rt.ble.Client();
+	ble_hw = yield* ble.Central();
 
 	// Using BLE may fail
 	if (ble_hw === null) {
-		rt.log.error('Unable to get access to a BLE device.');
+		console.error('Unable to get access to a BLE device.');
 		return;
 	}
 
@@ -53,11 +55,11 @@ function* init () {
 	// service.
 	ble_hw.scan([OORT_SERVICE_SENSOR_UUID], function* (peripheral) {
 	// ble_hw.scan([], function* (peripheral) {
-		rt.log.info('OORT: found periph');
+		console.info('OORT: found periph');
 
 		// Save the peripheral we find
 		if (oort_peripheral == null) {
-			rt.log.debug('null peripheral so far')
+			console.info('null peripheral so far')
 			ble_hw.scanStop();
 			oort_peripheral = peripheral;
 
@@ -66,12 +68,12 @@ function* init () {
 				// TODO: handle when the device disconnects
 				//var connect_err = yield* ble_hw.connect(peripheral /*, on_disconnect() );
 				var connect_err = yield* ble_hw.connect(peripheral, function () {
-					rt.log.info('OORT disconnected');
+					console.info('OORT disconnected');
 				});
-				rt.log.info('OORT: connected');
+				console.info('OORT: connected');
 
 				if (connect_err) {
-					rt.log.error('Error while connecting: ' + connect_err);
+					console.error('Error while connecting: ' + connect_err);
 					return;
 				}
 
@@ -90,7 +92,7 @@ function* init () {
 				}
 
 				if (index_info === -1) {
-					rt.log.error('Could not find a device info service. Can\'t set date.');
+					console.error('Could not find a device info service. Can\'t set date.');
 					throw 'Could not find a device info service. Can\'t set date.';
 				}
 
@@ -98,14 +100,14 @@ function* init () {
 					services[index_info], [OORT_CHAR_SYSTEMID_UUID]);
 
 				if (characteristics.length === 0) {
-					rt.log.error('Could not get the System ID characteristic.');
+					console.error('Could not get the System ID characteristic.');
 					throw 'Could not get the System ID characteristic.';
 				}
 
 				var system_id = yield* ble_hw.readCharacteristic(characteristics[0]);
 
 				if (index_sensor === -1) {
-					rt.log.error('Could not find sensor service for OORT.');
+					console.error('Could not find sensor service for OORT.');
 					throw 'Could not find sensor service for OORT.';
 				}
 
@@ -148,7 +150,7 @@ function* init () {
 				// var data = new Buffer([0x03, 0xdf, 0x07, 0x05, 0x1c, 0x16, 0x10, 0x2f, 0x8c, 0x03]);
 				// Set the clock on the device
 				yield* ble_hw.writeCharacteristic(oort_clock_characteristic, tosend);
-				rt.log.debug('Successfully set the OORT clock.');
+				console.info('Successfully set the OORT clock.');
 
 				// Now setup observe because we need that for all data communication
 				yield* setup_observe();
@@ -184,7 +186,7 @@ function convert_oort_to_float (bytes) {
 // and send to all ports.
 function* setup_observe () {
 	if (oort_sensor_characteristic == null) {
-		rt.log.error('No connected OORT. Cannot setup observe.');
+		console.error('No connected OORT. Cannot setup observe.');
 		throw 'No connected OORT. Cannot setup observe.';
 	}
 
@@ -209,7 +211,7 @@ function* setup_observe () {
 //onoff.Power.input = function* (state) {
 Power.input = function* (state) {
 	if (oort_sensor_characteristic == null) {
-		rt.log.error('No connected OORT. Cannot write.');
+		console.error('No connected OORT. Cannot write.');
 		throw 'No connected OORT. Cannot write.';
 	}
 	var val = (state) ? 0x1 : 0x0;
@@ -218,7 +220,7 @@ Power.input = function* (state) {
 
 function any_output (val) {
 	if (val == null) {
-		rt.log.error('No connected OORT. Cannot read.');
+		console.error('No connected OORT. Cannot read.');
 		throw 'No connected OORT. Cannot read.';
 	}
 

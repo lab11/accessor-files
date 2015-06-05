@@ -13,7 +13,7 @@
 var http = require('httpClient');
 var websocket = require('webSocket');
 
-function* init () {
+function setup () {
   createPort('Price', {
     type: 'numeric',
     units: 'currency_usd'
@@ -21,6 +21,10 @@ function* init () {
   createPort('Transactions', {
     type: 'object'
   });
+}
+
+function* init () {
+
 }
 
 Price.output = function* () {
