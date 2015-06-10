@@ -10,9 +10,13 @@
 
 
 function setup () {
-	createPort('Print');
+	createPort('Print', ['write']);
 }
 
-Print.input = function* (content) {
+function* init () {
+	addInputHandler('Print', in_Print);
+}
+
+in_Print = function* (content) {
 	console.log(content);
 }

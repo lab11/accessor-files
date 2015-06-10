@@ -16,16 +16,17 @@ var request_id = 1;
 // var saved_random_ints = [];
 
 function setup () {
-  createPort('RandomInteger', {
+  createPort('RandomInteger', ['read'], {
     type: 'numeric',
     min: 0,
     max: 999999
   });
-  createPort('RandomUUID');
+  createPort('RandomUUID', ['read']);
 }
 
-function init () {
-
+function* init () {
+  addOutputHandler('RandomInteger', out_RandomInteger);
+  addOutputHandler('RandomUUID', out_RandomUUID);
 }
 
 function* get_single (method, params) {
@@ -43,7 +44,7 @@ function* get_single (method, params) {
   return val;
 }
 
-RandomInteger.output = function* () {
+out_RandomInteger = function* () {
   var method = 'generateIntegers';
   var params = {
       apiKey: API_KEY,
@@ -52,18 +53,20 @@ RandomInteger.output = function* () {
       max: 999999
   };
 
-  return yield* get_single(method, params);
+  var rand = yield* get_single(method, params);
+  send('RandomInteger', rand);
 }
 
 // TODO
 //RandomInteger.observe
 
-RandomUUID.output = function* () {
+out_RandomUUID = function* () {
   var method = 'generateUUIDs';
   var params = {
     apiKey: API_KEY,
     n: 1
   };
 
-  return yield* get_single(method, params);
+  var rand = yield* get_single(method, params);
+  send('RandomUUID', rand);
 }

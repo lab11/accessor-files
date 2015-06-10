@@ -14,25 +14,19 @@ var http = require('httpClient');
 var websocket = require('webSocket');
 
 function setup () {
-  createPort('Price', {
+  createPort('Price', ['read'], {
     type: 'numeric',
     units: 'currency_usd'
   });
-  createPort('Transactions', {
+  createPort('Transactions', ['event'], {
     type: 'object'
   });
 }
 
 function* init () {
 
-}
+  addOutputHandler('Price', out_Price)
 
-Price.output = function* () {
-  var ticker = yield* http.get('https://blockchain.info/ticker');
-  return parseFloat(JSON.parse(ticker.body).USD.last).toFixed(2);
-}
-
-Transactions.observe = function* () {
   var ws = new websocket.Client('wss://ws.blockchain.info/inv');
 
   ws.on('message', function (data, flags) {
@@ -50,4 +44,10 @@ Transactions.observe = function* () {
   ws.on('open', function () {
     ws.send(JSON.stringify({'op':'unconfirmed_sub'}));
   });
+}
+
+out_Price = function* () {
+  var ticker = yield* http.get('https://blockchain.info/ticker');
+  var price = parseFloat(JSON.parse(ticker.body).USD.last).toFixed(2);
+  send('Price', price);
 }
