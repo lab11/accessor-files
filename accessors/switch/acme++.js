@@ -8,25 +8,33 @@
  * @author Brad Campbell <bradjc@umich.edu>
  */
 
+var coap = require('coapClient');
+
 var ip_addr;
 
+function setup () {
+	provideInterface('/onoff');
+	provideInterface('/sensor/power');
+}
+
 function* init () {
-	// INTERFACES
-	provide_interface('/onoff');
-	provide_interface('/sensor/power');
+	ip_addr = getParameter('ip_addr');
 
-	ip_addr = get_parameter('ip_addr');
+	addInputHandler('/onoff/Power', inPower);
+	addOutputHandler('/onoff/Power', outPower);
+	addOutputHandler('/sensor/power/Power', outWatts);
 }
 
-onoff.Power.input = function* (state) {
-	yield* rt.coap.post('coap://['+ip_addr+']/onoff/Power', (state)?'true':'false');
+inPower = function* (state) {
+	yield* coap.post('coap://['+ip_addr+']/onoff/Power', (state)?'true':'false');
 }
 
-onoff.Power.output = function* () {
-	var val = yield* rt.coap.get('coap://['+ip_addr+']/onoff/Power');
-	return val == 'true';
+outPower = function* () {
+	var val = yield* coap.get('coap://['+ip_addr+']/onoff/Power');
+	send('/onoff/Power', val == 'true');
 }
 
-sensor.power.Power.output = function* () {
-	return yield* rt.coap.get('coap://['+ip_addr+']/powermeter/Power');
+outWatts = function* () {
+	var watt = yield* rt.coap.get('coap://['+ip_addr+']/powermeter/Power');
+	send('/sensor/power/Power', watt);
 }

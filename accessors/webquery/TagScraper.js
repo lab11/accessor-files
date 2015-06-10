@@ -18,24 +18,26 @@ var url = '';
 var tag = '';
 
 function setup () {
-  createPort('URL');
-  createPort('Tag');
-  createPort('Scrape');
+  createPort('URL', ['write']);
+  createPort('Tag', ['write']);
+  createPort('Scrape', ['read']);
 }
 
 function* init () {
-
+  addInputHandler('URL', url);
+  addInputHandler('Tag', tag);
+  addOutputHandler('Scrape', scrape);
 }
 
-URL.input = function* (new_url) {
+url = function* (new_url) {
   url = new_url;
 }
 
-Tag.input = function* (new_tag) {
+tag = function* (new_tag) {
   tag = new_tag;
 }
 
-Scrape.output = function* () {
+scrape = function* () {
   console.info('URL: ' + url);
   if (url == '') {
     return '';
@@ -50,5 +52,6 @@ Scrape.output = function* () {
   var start = html.indexOf(open);
   var end = html.indexOf(close, start+open.length);
 
-  return html.substring(start+open.length, end);
+  var val = html.substring(start+open.length, end);
+  send('Scrape', val);
 }

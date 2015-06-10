@@ -1,8 +1,8 @@
 {
     "ports": {
         "Power": {
-            "directions": ["input", "output"],
-            "type":      "bool"
+            "attributes": ["read", "write"],
+            "type":       "bool"
         }
     }
 }

@@ -33,14 +33,27 @@ var LK_watts   = null;
 var LK_pf      = null;
 var LK_freq    = null;
 
-function* init () {
+function setup () {
 	// provide_interface('/onoff');
-	createPort('Power');
-	createPort('Voltage');
-	createPort('Current');
-	createPort('Watts');
-	createPort('PowerFactor');
-	createPort('Frequency');
+	createPort('Power', ['read', 'write', 'eventPeriodic']);
+	createPort('Voltage', ['read', 'eventPeriodic']);
+	createPort('Current', ['read', 'eventPeriodic']);
+	createPort('Watts', ['read', 'eventPeriodic']);
+	createPort('PowerFactor', ['read', 'eventPeriodic']);
+	createPort('Frequency', ['read', 'eventPeriodic']);
+}
+
+function* init () {
+
+	// Connect functions
+	addInputHandler('Power', inPower);
+	addOutputHandler('Power', outPower);
+	addOutputHandler('Voltage', outVoltage);
+	addOutputHandler('Current', outCurrent);
+	addOutputHandler('Watts', outWatts);
+	addOutputHandler('PowerFactor', outPowerFactor);
+	addOutputHandler('Frequency', outFrequency);
+
 
 	// Get a handle to the hardware
 	ble_hw = yield* ble.Central();
@@ -153,7 +166,22 @@ function* init () {
 				console.info('Successfully set the OORT clock.');
 
 				// Now setup observe because we need that for all data communication
-				yield* setup_observe();
+				// Setup the actual notify() callback
+				ble_hw.notifyCharacteristic(oort_sensor_characteristic, function (data) {
+					LK_power   = data[0] == 0x1;
+					LK_voltage = convert_oort_to_float(data.slice(1,4));
+					LK_current = convert_oort_to_float(data.slice(4,7));
+					LK_watts   = convert_oort_to_float(data.slice(7,10));
+					LK_pf      = convert_oort_to_float(data.slice(10,13));
+					LK_freq    = convert_oort_to_float(data.slice(13,16));
+
+					send('Power', LK_power);
+					send('Voltage', LK_voltage);
+					send('Current', LK_current);
+					send('Watts', LK_watts);
+					send('PowerFactor', LK_pf);
+					send('Frequency', LK_freq);
+				});
 			}
 		}
 	});
@@ -182,34 +210,8 @@ function convert_oort_to_float (bytes) {
 	return parseFloat(val_str);
 }
 
-// We only have 1 observe stream from the device, so we break it apart
-// and send to all ports.
-function* setup_observe () {
-	if (oort_sensor_characteristic == null) {
-		console.error('No connected OORT. Cannot setup observe.');
-		throw 'No connected OORT. Cannot setup observe.';
-	}
-
-	// Setup the actual notify() callback
-	ble_hw.notifyCharacteristic(oort_sensor_characteristic, function (data) {
-		LK_power   = data[0] == 0x1;
-		LK_voltage = convert_oort_to_float(data.slice(1,4));
-		LK_current = convert_oort_to_float(data.slice(4,7));
-		LK_watts   = convert_oort_to_float(data.slice(7,10));
-		LK_pf      = convert_oort_to_float(data.slice(10,13));
-		LK_freq    = convert_oort_to_float(data.slice(13,16));
-
-		send('Power', LK_power);
-		send('Voltage', LK_voltage);
-		send('Current', LK_current);
-		send('Watts', LK_watts);
-		send('PowerFactor', LK_pf);
-		send('Frequency', LK_freq);
-	});
-}
-
 //onoff.Power.input = function* (state) {
-Power.input = function* (state) {
+inPower = function* (state) {
 	if (oort_sensor_characteristic == null) {
 		console.error('No connected OORT. Cannot write.');
 		throw 'No connected OORT. Cannot write.';
@@ -227,20 +229,12 @@ function any_output (val) {
 	return val;
 }
 
-Power.output       = function () { return any_output(LK_power); };
-Voltage.output     = function () { return any_output(LK_voltage); };
-Current.output     = function () { return any_output(LK_current); };
-Watts.output       = function () { return any_output(LK_watts); };
-PowerFactor.output = function () { return any_output(LK_pf); };
-Frequency.output   = function () { return any_output(LK_freq); };
-
-// We support all of these, but don't need the function calls to do anything
-Power.observe       = function () { };
-Voltage.observe     = function () { };
-Current.observe     = function () { };
-Watts.observe       = function () { };
-PowerFactor.observe = function () { };
-Frequency.observe   = function () { };
+outPower       = function () { return send('Power', any_output(LK_power)); };
+outVoltage     = function () { return send('Voltage', any_output(LK_voltage)); };
+outCurrent     = function () { return send('Current', any_output(LK_current)); };
+outWatts       = function () { return send('Watts', any_output(LK_watts)); };
+outPowerFactor = function () { return send('PowerFactor', any_output(LK_pf)); };
+outFrequency   = function () { return send('Frequency', any_output(LK_freq)); };
 
 wrapup = function* () {
 	if (ble_hw != null && oort_peripheral != null) {
