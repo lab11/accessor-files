@@ -217,7 +217,7 @@ inPower = function* (state) {
 		throw 'No connected OORT. Cannot write.';
 	}
 	var val = (state) ? 0x1 : 0x0;
-	yield* ble_hw.writeCharacteristic(oort_clock_characteristic, [0x4, 0x1]);
+	yield* ble_hw.writeCharacteristic(oort_clock_characteristic, [0x4, val]);
 }
 
 function any_output (val) {
