@@ -66,124 +66,111 @@ function* init () {
 
 	// Start the scan for any devices that advertise the OORT sensor
 	// service.
-	ble_hw.scan([OORT_SERVICE_SENSOR_UUID], function* (peripheral) {
-	// ble_hw.scan([], function* (peripheral) {
-		console.info('OORT: found periph');
+	ble_hw.stayConnected(OORT_SERVICE_SENSOR_UUID, null, null, function* (peripheral) {
 
-		// Save the peripheral we find
-		if (oort_peripheral == null) {
-			console.info('null peripheral so far')
-			ble_hw.scanStop();
-			oort_peripheral = peripheral;
+		console.info('OORT: connected');
 
-			// Try to connect to the device if it is disconnected
-			if (peripheral.state == 'disconnected') {
-				// TODO: handle when the device disconnects
-				//var connect_err = yield* ble_hw.connect(peripheral /*, on_disconnect() );
-				var connect_err = yield* ble_hw.connect(peripheral, function () {
-					console.info('OORT disconnected');
-				});
-				console.info('OORT: connected');
+		// if (connect_err) {
+		// 	console.error('Error while connecting: ' + connect_err);
+		// 	return;
+		// }
 
-				if (connect_err) {
-					console.error('Error while connecting: ' + connect_err);
-					return;
-				}
+		// Get the sensor service for the device
+		var services = yield* ble_hw.discoverServices(
+			peripheral, [OORT_SERVICE_INFO_UUID, OORT_SERVICE_SENSOR_UUID]);
 
-				// Get the sensor service for the device
-				var services = yield* ble_hw.discoverServices(
-					peripheral, [OORT_SERVICE_INFO_UUID, OORT_SERVICE_SENSOR_UUID]);
-
-				var index_info = -1;
-				var index_sensor = -1;
-				for (var i=0; i<services.length; i++) {
-					if (services[i].uuid === OORT_SERVICE_INFO_UUID) {
-						index_info = i;
-					} else if (services[i].uuid === OORT_SERVICE_SENSOR_UUID) {
-						index_sensor = i;
-					}
-				}
-
-				if (index_info === -1) {
-					console.error('Could not find a device info service. Can\'t set date.');
-					throw 'Could not find a device info service. Can\'t set date.';
-				}
-
-				var characteristics = yield* ble_hw.discoverCharacteristics(
-					services[index_info], [OORT_CHAR_SYSTEMID_UUID]);
-
-				if (characteristics.length === 0) {
-					console.error('Could not get the System ID characteristic.');
-					throw 'Could not get the System ID characteristic.';
-				}
-
-				var system_id = yield* ble_hw.readCharacteristic(characteristics[0]);
-
-				if (index_sensor === -1) {
-					console.error('Could not find sensor service for OORT.');
-					throw 'Could not find sensor service for OORT.';
-				}
-
-				// Get the characteristics of the sensor service
-				var characteristics = yield* ble_hw.discoverCharacteristics(services[index_sensor], [OORT_CHAR_CLOCK_UUID, OORT_CHAR_SENSOR_UUID]);
-
-				for (var i=0; i<characteristics.length; i++) {
-					if (characteristics[i].uuid == OORT_CHAR_CLOCK_UUID) {
-						oort_clock_characteristic = characteristics[i];
-					} else if (characteristics[i].uuid == OORT_CHAR_SENSOR_UUID) {
-						oort_sensor_characteristic = characteristics[i];
-					}
-				}
-
-				// Upon connection, the clock has to be set in order
-				// for the OORT to not call disconnect on the connection
-				var now = new Date();
-				var tosend = [0x03];
-
-				tosend.push(now.getFullYear() & 0xFF);
-				tosend.push((now.getFullYear() >> 8) & 0xFF);
-				tosend.push(now.getMonth() + 1);
-				tosend.push(now.getDate());
-				tosend.push(now.getHours());
-				tosend.push(now.getMinutes());
-				tosend.push(now.getSeconds());
-
-				// Calculate this weird unique thing we have to send
-				// in order for the device to accept our date.
-				var cksum =
-					('i'.charCodeAt(0) ^ system_id[0]) +
-					('L'.charCodeAt(0) ^ system_id[1]) +
-					('o'.charCodeAt(0) ^ system_id[2]) +
-					('g'.charCodeAt(0) ^ system_id[5]) +
-					('i'.charCodeAt(0) ^ system_id[6]) +
-					('c'.charCodeAt(0) ^ system_id[7]);
-				tosend.push(cksum & 0xFF);
-				tosend.push((cksum >> 8) & 0xFF);
-
-				// var data = new Buffer([0x03, 0xdf, 0x07, 0x05, 0x1c, 0x16, 0x10, 0x2f, 0x8c, 0x03]);
-				// Set the clock on the device
-				yield* ble_hw.writeCharacteristic(oort_clock_characteristic, tosend);
-				console.info('Successfully set the OORT clock.');
-
-				// Now setup observe because we need that for all data communication
-				// Setup the actual notify() callback
-				ble_hw.notifyCharacteristic(oort_sensor_characteristic, function (data) {
-					LK_power   = data[0] == 0x1;
-					LK_voltage = convert_oort_to_float(data.slice(1,4));
-					LK_current = convert_oort_to_float(data.slice(4,7));
-					LK_watts   = convert_oort_to_float(data.slice(7,10));
-					LK_pf      = convert_oort_to_float(data.slice(10,13));
-					LK_freq    = convert_oort_to_float(data.slice(13,16));
-
-					send('Power', LK_power);
-					send('Voltage', LK_voltage);
-					send('Current', LK_current);
-					send('Watts', LK_watts);
-					send('PowerFactor', LK_pf);
-					send('Frequency', LK_freq);
-				});
+		var index_info = -1;
+		var index_sensor = -1;
+		for (var i=0; i<services.length; i++) {
+			if (services[i].uuid === OORT_SERVICE_INFO_UUID) {
+				index_info = i;
+			} else if (services[i].uuid === OORT_SERVICE_SENSOR_UUID) {
+				index_sensor = i;
 			}
 		}
+
+		if (index_info === -1) {
+			console.error('Could not find a device info service. Can\'t set date.');
+			throw 'Could not find a device info service. Can\'t set date.';
+		}
+
+		var characteristics = yield* ble_hw.discoverCharacteristics(
+			services[index_info], [OORT_CHAR_SYSTEMID_UUID]);
+
+		if (characteristics.length === 0) {
+			console.error('Could not get the System ID characteristic.');
+			throw 'Could not get the System ID characteristic.';
+		}
+
+		var system_id = yield* ble_hw.readCharacteristic(characteristics[0]);
+
+		if (index_sensor === -1) {
+			console.error('Could not find sensor service for OORT.');
+			throw 'Could not find sensor service for OORT.';
+		}
+
+		// Get the characteristics of the sensor service
+		var characteristics = yield* ble_hw.discoverCharacteristics(services[index_sensor], [OORT_CHAR_CLOCK_UUID, OORT_CHAR_SENSOR_UUID]);
+
+		for (var i=0; i<characteristics.length; i++) {
+			if (characteristics[i].uuid == OORT_CHAR_CLOCK_UUID) {
+				oort_clock_characteristic = characteristics[i];
+			} else if (characteristics[i].uuid == OORT_CHAR_SENSOR_UUID) {
+				oort_sensor_characteristic = characteristics[i];
+			}
+		}
+
+		// Upon connection, the clock has to be set in order
+		// for the OORT to not call disconnect on the connection
+		var now = new Date();
+		var tosend = [0x03];
+
+		tosend.push(now.getFullYear() & 0xFF);
+		tosend.push((now.getFullYear() >> 8) & 0xFF);
+		tosend.push(now.getMonth() + 1);
+		tosend.push(now.getDate());
+		tosend.push(now.getHours());
+		tosend.push(now.getMinutes());
+		tosend.push(now.getSeconds());
+
+		// Calculate this weird unique thing we have to send
+		// in order for the device to accept our date.
+		var cksum =
+			('i'.charCodeAt(0) ^ system_id[0]) +
+			('L'.charCodeAt(0) ^ system_id[1]) +
+			('o'.charCodeAt(0) ^ system_id[2]) +
+			('g'.charCodeAt(0) ^ system_id[5]) +
+			('i'.charCodeAt(0) ^ system_id[6]) +
+			('c'.charCodeAt(0) ^ system_id[7]);
+		tosend.push(cksum & 0xFF);
+		tosend.push((cksum >> 8) & 0xFF);
+
+		// var data = new Buffer([0x03, 0xdf, 0x07, 0x05, 0x1c, 0x16, 0x10, 0x2f, 0x8c, 0x03]);
+		// Set the clock on the device
+		yield* ble_hw.writeCharacteristic(oort_clock_characteristic, tosend);
+		console.info('Successfully set the OORT clock.');
+
+		// Now setup observe because we need that for all data communication
+		// Setup the actual notify() callback
+		ble_hw.notifyCharacteristic(oort_sensor_characteristic, function (data) {
+			LK_power   = data[0] == 0x1;
+			LK_voltage = convert_oort_to_float(data.slice(1,4));
+			LK_current = convert_oort_to_float(data.slice(4,7));
+			LK_watts   = convert_oort_to_float(data.slice(7,10));
+			LK_pf      = convert_oort_to_float(data.slice(10,13));
+			LK_freq    = convert_oort_to_float(data.slice(13,16));
+
+			send('Power', LK_power);
+			send('Voltage', LK_voltage);
+			send('Current', LK_current);
+			send('Watts', LK_watts);
+			send('PowerFactor', LK_pf);
+			send('Frequency', LK_freq);
+		});
+	}, function () {
+		oort_sensor_characteristic = null;
+	}, function (err) {
+		console.error(err);
 	});
 }
 

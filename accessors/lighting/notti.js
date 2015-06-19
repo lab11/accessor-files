@@ -26,10 +26,14 @@ var scan_token = null;
 var notti_characteristic = null;
 
 // Save the color so fade can look good
-var last_color = '000000';
+var last_color = 'ffffff';
 
 function setup () {
 	// provide_interface('/onoff');
+	createPort('Power', ['write'], {
+		type: 'bool'
+	});
+
 	createPort('Color', ['write'], {
 		type: 'color'
 	});
@@ -42,6 +46,7 @@ function setup () {
 function* init () {
 
 	// Connect functions
+	addInputHandler('Power', inPower);
 	addInputHandler('Color', inColor);
 	addInputHandler('Fade', inFade);
 
@@ -80,6 +85,22 @@ function color_to_rgb (color) {
 	var b = parseInt(color.slice(4,6), 16);
 
 	return [r, g, b];
+}
+
+inPower = function* (state) {
+	if (notti_characteristic == null) {
+		console.error('No connected Notti. Cannot write.');
+		throw 'No connected Notti. Cannot write.';
+	}
+
+	if (state) {
+		var channels = color_to_rgb(last_color);
+	} else {
+		var channels = color_to_rgb('000000');
+	}
+
+	var cmd = [0x06, 0x01].concat(channels);
+	yield* ble_hw.writeCharacteristic(notti_characteristic, cmd);
 }
 
 inColor = function* (color) {
