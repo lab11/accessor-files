@@ -1,8 +1,8 @@
-// name:   Belkin WeMo LED Lights
+// name:   WeMo Lights
 // author: Branden Ghena
 // email:  brghena@umich.edu
 
-// WeMoLight
+// Belkin WeMo LED Lights
 // ======
 //
 // WeMo lights are wireless controllable LED lights.
