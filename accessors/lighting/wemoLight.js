@@ -66,7 +66,11 @@ function* set_light_state (capability_id, capability_value) {
     body.replace('{deviceid}', id);
     body.replace('{capabilityid}', capability_id);
     body.replace('{capabilityvalue}', capability_value);
-    yield* rt.http.request(url, 'POST', headers, body, 0);
+    console.log.debug(url + '\n' + headers + '\n' + body);
+    console.log.debug("Posting...");
+    var response = yield* rt.http.request(url, 'POST', headers, body, 0);
+    console.log.debug("Response: ");
+    console.log.debug(response);
 }
 
 lighting.light.Power.input = function* (state) {
