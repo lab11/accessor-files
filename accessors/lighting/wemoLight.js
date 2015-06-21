@@ -1,12 +1,14 @@
-// name:   WeMo Lights
-// author: Branden Ghena
-// email:  brghena@umich.edu
+/**
+ * WeMo Lights
+ * ============
+ *
+ * WeMo lights are wireless controllable LED lights.
+ *
+ * @module
+ * @author Branden Ghena <brghena@umich.edu>
+ */
 
-// Belkin WeMo LED Lights
-// ======
-//
-// WeMo lights are wireless controllable LED lights.
-//
+var http = require('httpClient');
 
 // XML headers and footers for HTTP requests
 var postbodyheader = [
@@ -22,16 +24,23 @@ var ip_addr;
 var port;
 var id;
 
-function* init () {
-
-	// INTERFACES
-	provide_interface('/lighting/light');
-	provide_interface('/lighting/brightness');
+function setup () {
+    // INTERFACES
+    provideInterface('/lighting/light');
+    provideInterface('/lighting/brightness');
 
     //XXX: This works for testing control, but discovery is necessary for real usefulness
-	ip_addr = get_parameter('ip_addr');
-    port = get_parameter('port');
-    id = get_parameter('id');
+    ip_addr = getParameter('ip_addr');
+    port = getParameter('port');
+    id = getParameter('id');
+}
+
+function* init () {
+    addInputHandler('/lighting/light.Power', Powerinput);
+    addInputHandler('/lighting/brightness.Brightness', Brightnessinput);
+
+    addOutputHandler('/lighting/light.Power', Poweroutput);
+    addOutputHandler('/lighting/brightness.Brightness', Brightnessoutput);
 }
 
 function* discover_light_by_name (name) {
@@ -40,7 +49,7 @@ function* discover_light_by_name (name) {
     // discover any WeMo Lights behind the Links
 
     // save the ip address, port, and unique ID for this bulb
-    
+
     // ?handle errors somehow?
 }
 
@@ -67,27 +76,31 @@ function* set_light_state (capability_id, capability_value) {
     body = body.replace('{deviceid}', id);
     body = body.replace('{capabilityid}', capability_id);
     body = body.replace('{capabilityvalue}', capability_value);
-    var response = yield* rt.http.request(url, 'POST', headers, body, 0);
+    var response = (yield* http.request(url, 'POST', headers, body, 0)).body;
 }
 
-lighting.light.Power.input = function* (state) {
+// lighting.light.Power.input = function* (state) {
+var Powerinput = function* (state) {
     yield* set_light_state('10006', (state)?'1':'0');
 }
 
 //XXX: Implement me!
-lighting.light.Power.output = function* () {
+// lighting.light.Power.output = function* () {
+var Poweroutput = function* () {
 	//var val = yield* rt.coap.get('coap://['+ip_addr+']/onoff/Power');
 	//return val == 'true';
-    return 'true';
+    send('/lighting/light.Power', true);
 }
 
-lighting.brightness.Brightness.input = function* (brightness) {
+// lighting.brightness.Brightness.input = function* (brightness) {
+var Brightnessinput = function* (brightness) {
     yield* set_light_state('10008', brightness.toString()+":0");
 }
 
 //XXX: Implement me!
-lighting.brightness.Brightness.output = function* () {
+// lighting.brightness.Brightness.output = function* () {
+var Brightnessoutput = function* () {
 	//var bri = parseInt(yield* rt.coap.get('coap://['+ip_addr+']/sdl/luxapose/DutyCycle'));
 	//return bri * 2.55;
-    return '0';
+    send('/lighting/brightness.Brightness', 0);
 }
