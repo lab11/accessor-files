@@ -23,7 +23,6 @@ var port;
 var id;
 
 function* init () {
-    rt.log.debug("Creating WeMo Light accessor!!");
 
 	// INTERFACES
 	provide_interface('/lighting/light');
@@ -51,11 +50,7 @@ function* get_light_state () {
 }
 
 function* set_light_state (capability_id, capability_value) {
-    rt.log.debug("Setting light state with : ");
-    rt.log.debug(capability_id);
-    rt.log.debug(capability_value);
-
-    var url = ip_addr + ':' + port + '/upnp/control/bridge1';
+    var url = 'http://' + ip_addr + ':' + port + '/upnp/control/bridge1';
     var headers = {
 	    'SOAPACTION': '"urn:Belkin:service:bridge:1#SetDeviceStatus"',
 		'Content-Type': 'text/xml; charset="utf-8"',
@@ -72,21 +67,15 @@ function* set_light_state (capability_id, capability_value) {
     body = body.replace('{deviceid}', id);
     body = body.replace('{capabilityid}', capability_id);
     body = body.replace('{capabilityvalue}', capability_value);
-    rt.log.debug(url + '\n' + headers + '\n' + body);
-    rt.log.debug("Posting...");
     var response = yield* rt.http.request(url, 'POST', headers, body, 0);
-    rt.log.debug("Response: ");
-    rt.log.debug(response);
 }
 
 lighting.light.Power.input = function* (state) {
-    rt.log.debug("Power input called");
     yield* set_light_state('10006', (state)?'1':'0');
 }
 
 //XXX: Implement me!
 lighting.light.Power.output = function* () {
-    rt.log.debug("Power output called");
 	//var val = yield* rt.coap.get('coap://['+ip_addr+']/onoff/Power');
 	//return val == 'true';
     return 'true';
