@@ -20,55 +20,44 @@ function setup () {
   createPort('Z', ['write'], {
     type: 'numeric'
   });
-  createPort('Go', ['write']);
+  createPort('Position', ['write'], {
+    type: 'object'
+  });
+  createPortBundle('Position', ['X', 'Y', 'Z']);
 }
 
 var ws;
 var connection_opened = false;
+var seq = 0;
 
-var coord_x = null;
-var coord_y = null;
-var coord_z = 0;
 
 function* init () {
 
-  addInputHandler('X', x);
-  addInputHandler('Y', y);
-  addInputHandler('Z', z);
-
-  addInputHandler('Go', go);
+  addInputHandler('Position', position);
 
   ws = new websocket.Client('ws://' + getParameter('host'));
 
   ws.on('open', function () {
     connection_opened = true;
-    console.log('YEAH')
+    console.log('Connected to scarab');
   });
   ws.on('error', function () {
-    console.log('BOOO Eerr')
+    console.log('Err. Host: ws://' + getParameter('host'));
   });
   ws.on('message', function (data, flags) {
-    console.log('got mesggage')
+    console.log('Got message');
   });
 
 }
 
-x = function* (val) {
-  coord_x = parseFloat(val);
-}
+position = function* (val) {
+  var coord_x = parseFloat(val.x);
+  var coord_y = parseFloat(val.y);
+  var coord_z = parseFloat(val.z);
 
-y = function* (val) {
-  coord_y = parseFloat(val);
-}
-
-z = function* (val) {
-  coord_z = parseFloat(val);
-}
-
-go = function* () {
   var msg = {
     header: {
-      seq: 0,
+      seq: seq++,
       stamp: {
         secs: 0,
         nsecs: 0
