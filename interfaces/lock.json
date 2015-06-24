@@ -1,7 +1,7 @@
 {
 	"ports": {
 		"Lock": {
-			"directions": ["input", "output"],
+			"attributes": ["read", "write", "eventChange"],
 			"type":      "bool"
 		}
 	}

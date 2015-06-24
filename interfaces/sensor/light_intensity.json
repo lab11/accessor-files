@@ -1,7 +1,7 @@
 {
 	"ports": {
 		"LightIntensity": {
-			"directions": ["output"],
+			"attributes": ["read"],
 			"type": "integer"
 		}
 	}

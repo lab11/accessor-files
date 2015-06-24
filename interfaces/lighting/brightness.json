@@ -1,7 +1,7 @@
 {
 	"ports": {
 		"Brightness": {
-			"directions": ["input", "output"],
+			"attributes": ["read", "write"],
 			"type": "integer",
 			"min": 0,
 			"max": 255

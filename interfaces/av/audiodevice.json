@@ -2,7 +2,7 @@
   "extends": "/onoff",
     "ports": {
         "Volume": {
-            "directions": ["input", "output"],
+            "attributes": ["read", "write"],
             "type": "numeric"
         }
     }

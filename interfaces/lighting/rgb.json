@@ -1,7 +1,7 @@
 {
     "ports": {
         "Color": {
-            "directions": ["input", "output"],
+            "attributes": ["read", "write"],
             "type": "color"
         }
     }
