@@ -20,8 +20,8 @@ function rx_callback(message) {
 }
 
 function setup () {
-	creatPort('Message', ['write']);
-	creatPort('Response', ['read']);
+	createPort('Message', ['write']);
+	createPort('Response', ['read']);
 }
 
 function* init () {
