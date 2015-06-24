@@ -9,9 +9,11 @@
  * @author Brad Campbell <bradjc@umich.edu>
  */
 
-function init() {
+var amqp = require('rabbitmq');
+
+function setup () {
   // Create a single output observe port to publish data from the queue to.
-  create_port('Data', {
+  createPort('Data', ['event'], {
     type: 'object'
   });
 }
@@ -20,13 +22,13 @@ function data_callback (val) {
   send('Data', val);
 }
 
-Data.observe = function* () {
-  var amqp_url = get_parameter('amqp_url');
-  var exchange = get_parameter('amqp_exchange');
-  var routing_key = get_parameter('amqp_routing_key');
+function* init () {
+  var amqp_url = getParameter('amqp_url');
+  var exchange = getParameter('amqp_exchange');
+  var routing_key = getParameter('amqp_routing_key');
 
   // Connect to the RabbitMQ server
-  var amqp_conn = yield* rt.amqp.connect(amqp_url);
+  var amqp_conn = yield* amqp.Client(amqp_url);
 
   // Setup a simple listener that will create a queue to the given exchange
   // with the given routing key and call `data_callback` every time a data packet

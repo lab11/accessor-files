@@ -13,29 +13,36 @@ var coap = require('coapClient');
 
 var ip_addr;
 
-function* init () {
-	// INTERFACES
+function* setup () {
 	provideInterface('/lighting/light');
 	provideInterface('/lighting/brightness');
-
-	ip_addr = getParameter('ip_addr');
 }
 
-lighting.light.Power.input = function* (state) {
+function* init () {
+	ip_addr = getParameter('ip_addr');
+
+	addInputHandler('/lighting/light.Power', Power_input);
+	addOutputHandler('/lighting/light.Power', Power_output);
+
+	addInputHandler('/lighting/brightness.Brightness', Brightness_input);
+	addOutputHandler('/lighting/brightness.Brightness', Brightness_output);
+}
+
+Power_input = function* (state) {
 	yield* coap.post('coap://['+ip_addr+']/onoff/Power', (state)?'true':'false');
 }
 
-lighting.light.Power.output = function* () {
-	var val = (yield* coap.get('coap://['+ip_addr+']/onoff/Power')).payload.toString('utf-8');
-	return val == 'true';
+Power_output = function* () {
+	var val = (yield* coap.get('coap://['+ip_addr+']/onoff/Power')).body.toString('utf-8');
+	send('/lighting/light.Power', val == 'true');
 }
 
-lighting.brightness.Brightness.input = function* (brightness) {
+Brightness_input = function* (brightness) {
 	var bri = Math.round(brightness / 2.55);
 	yield* coap.post('coap://['+ip_addr+']/sdl/luxapose/DutyCycle', bri.toString());
 }
 
-lighting.brightness.Brightness.output = function* () {
-	var bri = parseInt((yield* coap.get('coap://['+ip_addr+']/sdl/luxapose/DutyCycle')).payload.toString('utf-8'));
-	return bri * 2.55;
+Brightness_output = function* () {
+	var bri = parseInt((yield* coap.get('coap://['+ip_addr+']/sdl/luxapose/DutyCycle')).body.toString('utf-8'));
+	send('/lighting/brightness.Brightness', bri * 2.55);
 }

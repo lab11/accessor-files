@@ -11,12 +11,10 @@
 
 var http = require('httpClient');
 
-var stock_symbol = 'YHOO';
-
 function setup () {
   createPort('StockSymbol', ['write'], {
     display_name: "Stock Symbol",
-    default: "YHOO",
+    value: "YHOO",
     description: "The stock symbol."
   });
   createPort('Price', ['read', 'event'], {
@@ -32,7 +30,8 @@ function* init() {
 }
 
 function* getPrice () {
-  var url = "http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.quotes%20where%20symbol%20in%20(%22"+ stock_symbol + "%22)%0A%09%09&env=http%3A%2F%2Fdatatables.org%2Falltables.env&format=json";
+  var symbol = get('StockSymbol');
+  var url = "http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.quotes%20where%20symbol%20in%20(%22"+ symbol + "%22)%0A%09%09&env=http%3A%2F%2Fdatatables.org%2Falltables.env&format=json";
   var record = (yield* http.get(url)).body;
   var json = JSON.parse(record);
   if (json.query.results == null) {
