@@ -8,32 +8,32 @@
  * @author Brad Campbell <bradjc@umich.edu>
  */
 
-function* init () {
-	create_port('People', {
+var http = require('httpClient');
+var encode = require('encode');
+
+function setup () {
+	createPort('People', ['read'], {
 		type: 'string',
 		description: 'The people in the room'
 	});
-	create_port('Update', {
-		type: 'button'
-	});
-
-	// yield* Update();
 }
 
-People.output = function* () {
-	return '';
+function* init () {
+	addOutputHandler('People', people);
 }
 
-Update.input = function* () {
-	var pid = get_parameter('profile_id');
-	var gatd = get_parameter('gatd_url');
-	var query = rt.encode.btoa(JSON.stringify({'location_str':get_parameter('location')}));
+var people = function* () {
+	var pid = getParameter('profile_id');
+	var gatd = getParameter('gatd_url');
+	var query = encode.btoa(JSON.stringify({'location_str':getParameter('location')}));
 	var url = gatd + '/viewer/recent/'+pid+'?limit=1&query='+query;
 
-	data = JSON.parse(yield* rt.http.readURL(url));
+	console.log(url);
+
+	data = JSON.parse((yield* http.get(url)).body);
 
 	if (data.length == 0) {
-		// set('People', 'Nobody in the room');
+		send('People', 'Nobody in the room');
 	} else {
 		people_list = data[0].person_list;
 		people_names = [];
@@ -44,9 +44,9 @@ Update.input = function* () {
 			}
 		}
 		if (people_names.length == 0) {
-			// set('People', 'Nobody in the room');
+			send('People', 'Nobody in the room');
 		} else {
-			// set('People', people_names.join(', '));
+			send('People', people_names.join(', '));
 		}
 	}
 }

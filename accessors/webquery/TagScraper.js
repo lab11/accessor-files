@@ -14,30 +14,25 @@
 
 var http = require('httpClient');
 
-var url = '';
-var tag = '';
 
 function setup () {
-  createPort('URL', ['write']);
-  createPort('Tag', ['write']);
+  createPort('URL', ['write'], {
+    value: 'http://google.com'
+  });
+  createPort('Tag', ['write'], {
+    value: 'title'
+  });
   createPort('Scrape', ['read']);
 }
 
 function* init () {
-  addInputHandler('URL', url);
-  addInputHandler('Tag', tag);
   addOutputHandler('Scrape', scrape);
 }
 
-url = function* (new_url) {
-  url = new_url;
-}
-
-tag = function* (new_tag) {
-  tag = new_tag;
-}
-
 scrape = function* () {
+  var url = get('URL');
+  var tag = get('Tag');
+
   console.info('URL: ' + url);
   if (url == '') {
     return '';
