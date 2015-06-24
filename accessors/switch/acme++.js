@@ -20,9 +20,9 @@ function setup () {
 function* init () {
 	ip_addr = getParameter('ip_addr');
 
-	addInputHandler('/onoff/Power', inPower);
-	addOutputHandler('/onoff/Power', outPower);
-	addOutputHandler('/sensor/power/Power', outWatts);
+	addInputHandler('/onoff.Power', inPower);
+	addOutputHandler('/onoff.Power', outPower);
+	addOutputHandler('/sensor/power.Power', outWatts);
 }
 
 inPower = function* (state) {
@@ -31,10 +31,10 @@ inPower = function* (state) {
 
 outPower = function* () {
 	var val = yield* coap.get('coap://['+ip_addr+']/onoff/Power');
-	send('/onoff/Power', val == 'true');
+	send('/onoff.Power', val == 'true');
 }
 
 outWatts = function* () {
 	var watt = yield* rt.coap.get('coap://['+ip_addr+']/powermeter/Power');
-	send('/sensor/power/Power', watt);
+	send('/sensor/power.Power', watt);
 }
