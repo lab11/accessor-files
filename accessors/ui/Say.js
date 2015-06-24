@@ -8,12 +8,16 @@
  * @author Pat Pannuto <ppannuto@umich.edu>
  */
 
+var tts = require('textToSpeech');
 
-
-function* init () {
-	create_port('Say');
+function setup () {
+	createPort('Say', ['write']);
 }
 
-Say.input = function* (content) {
-	yield* rt.text_to_speech.say(content);
+function* init () {
+	addInputHandler('Say', say);
+}
+
+var say = function* (content) {
+	yield* tts.say(content);
 }

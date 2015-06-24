@@ -21,25 +21,30 @@ var LK_light       = null;
 
 function setup () {
 	// provide_interface('/onoff');
-	createPort('Temperature', {
+	createPort('Temperature', ['read', 'event'], {
 		type: 'numeric',
 		units: 'degrees_celcius'
 	});
-	createPort('Humidity', {
+	createPort('Humidity', ['read', 'event'], {
 		type: 'numeric',
 		units: 'relative_humidity'
 	});
-	createPort('Pressure', {
+	createPort('Pressure', ['read', 'event'], {
 		type: 'numeric',
 		units: 'mbars'
 	});
-	createPort('Light', {
+	createPort('Light', ['read', 'event'], {
 		type: 'numeric',
 		units: 'lux'
 	});
 }
 
 function* init () {
+
+	addOutputHandler('Temperature', Temperature_output);
+	addOutputHandler('Humidity', Humidity_output);
+	addOutputHandler('Pressure', Pressure_output);
+	addOutputHandler('Light', Light_output);
 
 	var BLEES_mac = getParameter('mac_address');
 
@@ -53,7 +58,7 @@ function* init () {
 	}
 
 	// Start the scan for any devices
-	ble_hw.scan([], function* (peripheral) {
+	ble_hw.scan([], 'BLEES', BLEES_mac, function* (peripheral) {
 
 		if (peripheral.advertisement.localName === 'BLEES' &&
 			peripheral.address == BLEES_mac) {
@@ -75,28 +80,16 @@ function* init () {
 }
 
 
-function any_output (val) {
+function any_output (port, val) {
 	if (val == null) {
 		console.error('Could not find a BLEES sensor.');
 		throw 'Could not find a BLEES sensor.';
 	}
 
-	return val;
+	send(port, val);
 }
 
-Temperature.output = function () { return any_output(LK_temperature); };
-Humidity.output    = function () { return any_output(LK_humidity); };
-Pressure.output    = function () { return any_output(LK_pressure); };
-Light.output       = function () { return any_output(LK_light); };
-
-// We support all of these, but don't need the function calls to do anything
-Temperature.observe = function () { };
-Humidity.observe    = function () { };
-Pressure.observe    = function () { };
-Light.observe       = function () { };
-
-wrapup = function* () {
-	if (ble_hw != null && oort_peripheral != null) {
-		yield* ble_hw.disconnect(oort_peripheral);
-	}
-}
+var Temperature_output = function () { return any_output('Temperature', LK_temperature); };
+var Humidity_output    = function () { return any_output('Humidity', LK_humidity); };
+var Pressure_output    = function () { return any_output('Pressure', LK_pressure); };
+var Light_output       = function () { return any_output('Light', LK_light); };
