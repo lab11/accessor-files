@@ -57,6 +57,7 @@ var search = function* () {
   console.log('searching...');
 
   // HACK. This should be in the .on('response') handler
+  // But isn't because the function* doesn't get called correctly
   if (last_known_location != null) {
     console.info('looking up ' + last_known_location);
     var xml = (yield* http.get(last_known_location)).body;

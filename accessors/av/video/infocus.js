@@ -11,14 +11,16 @@
  * @author Pat Pannuto <ppannuto@umich.edu>
  */
 
-POWER_STATES = {
+ var http = require('httpClient');
+
+var POWER_STATES = {
   'off' : 0,
   'on' : 1,
   'turning_off' : 2,
   'turning_on' : 3
 };
 
-SOURCES = {
+var SOURCES = {
   'VGA' : 1,
   'HDMI 1' : 2,
   'HDMI 2' : 3,
@@ -26,47 +28,87 @@ SOURCES = {
   'Composite' : 5
 };
 
-function* init () {
-  // INTERFACES
-  provide_interface('/av/videodevice');
+function find_in_xml (xml, tag) {
+  var open = '<' + tag + '>';
+  var close = '</' + tag + '>';
 
-  // PORTS
+  var start = xml.indexOf(open);
+  var end = xml.indexOf(close, start+open.length);
+
+  var val = xml.substring(start+open.length, end);
+  return val;
+}
+
+function setup () {
+  // provideInterface('/av/videodevice');
+
+  createPort('Power', ['read', 'write']);
 
   // Select the video source for the projector
-  create_port('Input', {
+  createPort('Input', ['write', 'read'], {
     type: 'select',
     options: ['VGA', 'HDMI 1', 'HDMI 2', 'S-Video', 'Composite']
   });
 }
 
-Power.input = function* (power_setting) {
+function* init () {
+  addInputHandler('Power', Power_input);
+  addOutputHandler('Power', Power_output);
+  addInputHandler('Input', Input_input);
+  addOutputHandler('Input', Input_output);
+}
+
+var Power_input = function* (power_setting) {
   var url;
 
   if (power_setting) {
-    url = get_parameter('device_url') + '/dpjset.cgi?PJ_PowerMode=1';
+    url = getParameter('device_url') + '/dpjset.cgi?PJ_PowerMode=1';
   } else {
-    url = get_parameter('device_url') + '/dpjset.cgi?PJ_PowerMode=0';
+    url = getParameter('device_url') + '/dpjset.cgi?PJ_PowerMode=0';
   }
-  yield* rt.http.request(url, 'GET', null, '', 3000);
+  yield* http.get(url);
 }
 
-Power.output = function* () {
-  var url = get_parameter('device_url') + '/PJState.xml';
+var Power_output = function* () {
+  var url = getParameter('device_url') + '/PJState.xml';
 
   /* Get the XML status from the receiver */
-  var xml = yield* rt.http.request(url, 'GET', null, '', 3000);
+  var xml = (yield* http.get(url)).body;
 
-  val = getXMLValue(xml, 'pjPowermd');
+  var val = find_in_xml(xml, 'pjPowermd');
   if ((val == POWER_STATES['off']) || (val == POWER_STATES['turning_off'])) {
-    return false;
+    send('Power', false);
   } else {
-    return true;
+    send('Power', true);
   }
 }
 
-Input.input = function* (input_setting_choice) {
+var Input_input = function* (input_setting_choice) {
   if (SOURCES[input_setting_choice] === undefined) return;
 
-  var url = get_parameter('device_url') + '/dpjset.cgi?PJ_SRCINPUT=' + SOURCES[input_setting_choice];
-  yield* rt.http.request(url, 'GET', null, '', 3000);
+  var url = getParameter('device_url') + '/dpjset.cgi?PJ_SRCINPUT=' + SOURCES[input_setting_choice];
+  yield* http.get(url);
+}
+
+var Input_output = function* (input_setting_choice) {
+  var url = getParameter('device_url') + '/PJState.xml';
+
+  /* Get the XML status from the receiver */
+  var xml = (yield* http.get(url)).body;
+  var val = parseInt(find_in_xml(xml, 'pjsrc'));
+  var out = null;
+
+  for (var source in SOURCES) {
+    if (SOURCES.hasOwnProperty(source)) {
+      if (SOURCES[source] == val) {
+        out = source;
+      }
+    }
+  }
+
+  if (out !== null) {
+    send('Input', out);
+  } else {
+    throw 'Could not determine projector input setting.';
+  }
 }
