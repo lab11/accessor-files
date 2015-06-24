@@ -3,12 +3,12 @@
 	"ports": {
 		"Humidity": {
 			"type": "numeric",
-			"unit": "relative_humidity",
+			"units": "relative_humidity",
 			"attributes": ["read", "eventPeriodic"]
 		},
 		"Pressure": {
 			"type": "numeric",
-			"unit": "mbars",
+			"units": "mbars",
 			"attributes": ["read", "eventPeriodic"]
 		}
 	}
