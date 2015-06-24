@@ -1,16 +1,20 @@
-// title: Failure - no author
-// email: bradjc@umich.edu
-
-/* Failure
+/**
+ * Failure
  * ======================
  *
  * No author.
+ *
+ * @module
  */
 
-function* init () {
-  create_port('Port1');
+function setup () {
+	createPort('Port1', ['write']);
 }
 
-Port1.input = function* (val) {
-	rt.log.debug(val);
+function* init () {
+  addInputHandler('Port1', Port1_input);
+}
+
+var Port1_input = function* (val) {
+	console.log(val);
 }

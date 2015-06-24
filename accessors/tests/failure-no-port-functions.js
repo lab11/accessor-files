@@ -1,13 +1,13 @@
-// title: Failure - no port
-// author: Brad Campbell
-// email: bradjc@umich.edu
-
-/* Failure
+/**
+ * Failure
  * ======================
  *
  * No port functions.
+ *
+ * @module
+ * @author Brad Campbell <bradjc@umich.edu>
  */
 
-function* init () {
-  create_port('Port1');
+function setup () {
+  createPort('Port1');
 }

@@ -1,16 +1,21 @@
-// title: Failure - no port
-// author: Brad Campbell
-
-/* Failure
+/**
+ * Failure
  * ======================
  *
  * No email.
+ *
+ * @module
+ * @author Brad Campbell
  */
 
-function* init () {
-  create_port('Port1');
+function setup () {
+	createPort('Port1', ['write']);
 }
 
-Port1.input = function* (val) {
-	rt.log.debug(val);
+function* init () {
+  addInputHandler('Port1', Port1_input);
+}
+
+var Port1_input = function* (val) {
+	console.log(val);
 }
