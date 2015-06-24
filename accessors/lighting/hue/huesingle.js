@@ -48,7 +48,6 @@ function* set_bulb_parameter (params) {
 }
 
 function setup () {
-	provideInterface('/lighting/light');
 	provideInterface('/lighting/hue');
 
 	createPortBundle('PCB', ['Power', 'Color', 'Brightness'], {
