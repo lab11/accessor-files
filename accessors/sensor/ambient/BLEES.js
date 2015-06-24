@@ -6,6 +6,9 @@
  * sensors. It transmits all sensor readings in advertisements so listeners do
  * not have to connect.
  *
+ * See the [github](https://github.com/lab11/blees) repo for more information,
+ * including software and hardware files.
+ *
  * @module
  * @author Brad Campbell <bradjc@umich.edu>
  * @display-name BLEES
@@ -46,7 +49,7 @@ function* init () {
 	addOutputHandler('Pressure', Pressure_output);
 	addOutputHandler('Light', Light_output);
 
-	var BLEES_mac = getParameter('mac_address');
+	var BLEES_mac = getParameter('mac_address', null);
 
 	// Get a handle to the hardware
 	ble_hw = yield* ble.Central();
@@ -59,23 +62,17 @@ function* init () {
 
 	// Start the scan for any devices
 	ble_hw.scan([], 'BLEES', BLEES_mac, function* (peripheral) {
+		var msd = peripheral.advertisement.manufacturerData;
 
-		if (peripheral.advertisement.localName === 'BLEES' &&
-			peripheral.address == BLEES_mac) {
+		LK_temperature = msd.readFloatLE(2);
+		LK_humidity    = msd.readFloatLE(6);
+		LK_light       = msd.readFloatLE(10);
+		LK_pressure    = msd.readFloatLE(14);
 
-			var msd = peripheral.advertisement.manufacturerData;
-
-			LK_temperature = msd.readFloatLE(2);
-			LK_humidity    = msd.readFloatLE(6);
-			LK_light       = msd.readFloatLE(10);
-			LK_pressure    = msd.readFloatLE(14);
-
-			send('Temperature', LK_temperature);
-			send('Humidity', LK_humidity);
-			send('Pressure', LK_pressure);
-			send('Light', LK_light);
-		}
-
+		send('Temperature', LK_temperature);
+		send('Humidity', LK_humidity);
+		send('Pressure', LK_pressure);
+		send('Light', LK_light);
 	});
 }
 
