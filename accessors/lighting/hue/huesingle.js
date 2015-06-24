@@ -44,32 +44,43 @@ function* set_bulb_parameter (params) {
 	var bulbid = get_bulb_id();
 
 	url = getParameter('bridge_url') + '/api/' + getParameter('username') + '/lights/' + bulbid + '/state';
-	// yield* http.request(url, 'PUT', null, JSON.stringify(params), 3000);
 	yield* http.put(url, JSON.stringify(params));
 }
 
+function setup () {
+	provideInterface('/lighting/light');
+	provideInterface('/lighting/hue');
+
+	createPortBundle('PCB', ['Power', 'Color', 'Brightness'], {
+		type: 'object'
+	});
+}
 
 function* init () {
-	provide_interface('/lighting/light');
-	provide_interface('/lighting/hue');
+	addInputHandler('Power', Power_input);
+	addOutputHandler('Power', Power_output);
+	addInputHandler('Color', Color_input);
+	addOutputHandler('Color', Color_output);
+	addInputHandler('Brightness', Brightness_input);
+	addOutputHandler('Brightness', Brightness_output);
 
-	createPort('PCB', {type: 'object'});
+	addInputHandler('PCB', PCB_input);
 
 	console.info("Accessor::hue_single init before prefetch");
 	yield* prefetch_bulb_layout();
 	console.info("Accessor::hue_single init after prefetch (end of init)");
 }
 
-lighting.light.Power.input = function* (on) {
+var Power_input = function* (on) {
 	yield* set_bulb_parameter({'on': on});
 }
 
-lighting.light.Power.output = function* () {
+var Power_output = function* () {
 	var state = yield* get_bulb_state();
-	return state.on;
+	send('Power', state.on);
 }
 
-lighting.hue.Color.input = function* (hex_color) {
+var Color_input = function* (hex_color) {
 	var hsv = color.hex_to_hsv(hex_color);
 	params = {'hue': Math.round(hsv.h*182.04),
 	          'sat': Math.round(hsv.s*255),
@@ -77,23 +88,23 @@ lighting.hue.Color.input = function* (hex_color) {
 	yield* set_bulb_parameter(params);
 }
 
-lighting.hue.Color.output = function* () {
+var Color_output = function* () {
 	var state = yield* get_bulb_state();
 	var c = {
 		'h': state.hue / 182.04,
 		's': state.sat / 255,
 		'v': state.bri / 255
 	}
-	return color.hsv_to_hex(c);
+	send('Color', color.hsv_to_hex(c));
 }
 
-lighting.hue.Brightness.input = function* (brightness) {
+var Brightness_input = function* (brightness) {
 	yield* set_bulb_parameter({'bri': parseInt(brightness)});
 }
 
-lighting.hue.Brightness.output = function* () {
+var Brightness_output = function* () {
 	var state = yield* get_bulb_state();
-	return state.bri;
+	send('Brightness', state.bri);
 }
 
 // Control Power, Color, and Brightness in one go.
@@ -103,7 +114,7 @@ lighting.hue.Brightness.output = function* () {
 //   Color: 'cc5400',
 //   Brightness: 120
 // }
-PCB.input = function* (pcb) {
+var PCB_input = function* (pcb) {
 	var p = pcb.Power;
 	var c = pcb.Color;
 	var hsv = color.hex_to_hsv(c);

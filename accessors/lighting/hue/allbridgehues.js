@@ -9,91 +9,105 @@
  * @author Brad Campbell <bradjc@umich.edu>
  */
 
+var http = require('httpClient');
+var color = require('color');
+
 var bulbids = [];
 
 function* on_each (body) {
 	for (var bulbid in bulbids) {
-		url = get_parameter('bridge_url') + '/api/' + get_parameter('username') + '/lights/' + bulbid + '/state';
-		yield* rt.http.request(url, 'PUT', null, JSON.stringify(body), 3000);
+		url = getParameter('bridge_url') + '/api/' + getParameter('username') + '/lights/' + bulbid + '/state';
+		yield* http.put(url, JSON.stringify(body));
 	}
 }
 
-function* init () {
-	provide_interface('/lighting/light');
-	provide_interface('/lighting/hue');
+function setup () {
+	provideInterface('/lighting/light');
+	provideInterface('/lighting/hue');
 
-	create_port('Bridge');
+	createPort('Bridge', ['read']);
+}
+
+function* init () {
+	addInputHandler('Power', Power_input);
+	addOutputHandler('Power', Power_output);
+	addInputHandler('Color', Color_input);
+	addOutputHandler('Color', Color_output);
+	addInputHandler('Brightness', Brightness_input);
+	addOutputHandler('Brightness', Brightness_output);
+
+	addOutputHandler('Bridge', Bridge_output);
 
 	// Populate the list of known bulbs
-	var url = get_parameter('bridge_url') + '/api/' + get_parameter('username') + '/lights';
-	var data = JSON.parse(yield* rt.http.get(url));
+	var url = getParameter('bridge_url') + '/api/' + getParameter('username') + '/lights';
+	var data = JSON.parse((yield* http.get(url)).body);
 	for (var key in data) {
 		bulbids.push(key);
 	}
 }
 
-Power.input = function* (on) {
+var Power_input = function* (on) {
 	yield* on_each({'on': on});
 }
 
-Power.output = function* () {
+var Power_output = function* () {
 	var on = false;
 
 	for (var i=0; i<bulbids.length; i++) {
-		url = get_parameter('bridge_url') + '/api/' + get_parameter('username') + '/lights/' + bulbids[i];
-		var bulb_state = JSON.parse(yield* rt.http.get(url));
+		url = getParameter('bridge_url') + '/api/' + getParameter('username') + '/lights/' + bulbids[i];
+		var bulb_state = JSON.parse((yield* http.get(url)).body);
 		if (bulb_state.state.on) {
 			on = true;
 		}
 	}
 
-	return on;
+	send('Power', on);
 }
 
-Color.input = function* (hex_color) {
-	hsv = rt.color.hex_to_hsv(hex_color);
+var Color_input = function* (hex_color) {
+	hsv = color.hex_to_hsv(hex_color);
 	params = {'hue': Math.round(hsv.h*182.04),
 	          'sat': Math.round(hsv.s*255),
 	          'bri': Math.round(hsv.v*255)}
 	yield* on_each(params);
 }
 
-Color.output = function* () {
+var Color_output = function* () {
 	if (bulbids.length > 0) {
 		// There are two cases here.
 		// 1. All the lights are the same color. So we ask the first and
 		//    return its color.
 		// 2. They are not all the same color. Well then who knows what we should
 		//    return so we just return the color of the first light again.
-		url = get_parameter('bridge_url') + '/api/' + get_parameter('username') + '/lights/' + bulbids[0];
-		var bulb_state = JSON.parse(yield* rt.http.get(url));
+		url = getParameter('bridge_url') + '/api/' + getParameter('username') + '/lights/' + bulbids[0];
+		var bulb_state = JSON.parse((yield* http.get(url)).body);
 		var color = {
 			'h': bulb_state.state.hue / 182.04,
 			's': bulb_state.state.sat / 255,
 			'v': bulb_state.state.bri / 255
 		}
-		return rt.color.hsv_to_hex(color);
+		send('Color', color.hsv_to_hex(color));
 	} else {
 		// Need to return something...
-		return '000000';
+		send('Color', '000000');
 	}
 }
 
-Brightness.input = function* (brightness) {
+var Brightness_input = function* (brightness) {
 	yield* on_each({'bri': parseInt(brightness)});
 }
 
-Brightness.output = function* () {
+var Brightness_output = function* () {
 	if (bulbids.length > 0) {
-		url = get_parameter('bridge_url') + '/api/' + get_parameter('username') + '/lights/' + bulbids[0];
-		var bulb_state = JSON.parse(yield* rt.http.get(url));
-		return bulb_state.state.bri;
+		url = getParameter('bridge_url') + '/api/' + getParameter('username') + '/lights/' + bulbids[0];
+		var bulb_state = JSON.parse((yield* http.get(url)).body);
+		send('Brightness', bulb_state.state.bri);
 	} else {
 		// Need to return something...
-		return 0;
+		send('Brightness', 0);
 	}
 }
 
-Bridge.output = function* () {
-	return get_parameter('bridge_url');
+var Bridge_output = function* () {
+	send('Bridge', getParameter('bridge_url'));
 }
