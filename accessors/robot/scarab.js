@@ -2,7 +2,15 @@
  * Scarab Accessor
  * ======================
  *
- * Send locations to /goal with ROS.
+ * Accessor for controlling a Scarab robot. Scarabs use ROS, and this accessor
+ * interacts with the ROS system using its WebSockets bridge.
+ *
+ * This accessor publishes to the `/goal` topic to control where the robot
+ * should go, and subscribes to the `/scarab0/gt_pose` topic to know
+ * where the robot currently is.
+ *
+ * To move the robot, send a set of destination X,Y,Z coordinates to the
+ * `Position` port bundle.
  *
  * @module robot/scarab
  * @author Brad Campbell <bradjc@umich.edu>
