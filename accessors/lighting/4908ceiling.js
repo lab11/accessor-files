@@ -2,24 +2,48 @@
  * Light Control for 4908 Ceiling Lights
  * =====================================
  *
- * Use GATD to control the lights on the ceiling in 4908.
+ * Turn the LED lights in 4908 on and off. This only applies to the main
+ * overheads.
  *
  * @module
  * @display-name 4908 Ceiling Lights
  * @author Brad Campbell <bradjc@umich.edu>
  */
 
+var amqp = require('rabbitmq');
+var conn = null;
 
-function* init () {
-	provide_interface('/lighting/light');
+function setup () {
+	provideInterface('/lighting/light');
+	// createPort('Power', ['write']);
 }
 
-Power.input = function* (state) {
-	var post_url = get_parameter('post_url');
-	var location = get_parameter('location_str');
-	var data = {};
+function* init () {
+	addInputHandler('Power', Power_input);
 
-	data['light_command'] = (state) ? 'on' : 'off';
-	data['location_str'] = location;
-	yield* rt.http.request(post_url, 'POST', {'Content-Type': 'application/json'}, JSON.stringify(data), 0);
+	conn = yield* amqp.Client(getParameter('rabbitmq_url'));
+}
+
+var Power_input = function* (state) {
+	if (null) {
+		throw 'Could not connect to RabbitMQ';
+	}
+
+	var location = getParameter('location_str');
+	var data = {
+		override: false,
+		delay: 30*60*1000,
+		delayed_msg: true,
+		location_str: location
+	};
+
+	if (state) {
+		data.event_str = 'Room lights on';
+	} else {
+		data.event_str = 'Room lights off';
+	}
+
+	yield* conn.publish(getParameter('rabbitmq_exchange'),
+	                    getParameter('rabbitmq_routing_key'),
+	                    JSON.stringify(data));
 }

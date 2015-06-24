@@ -1,23 +1,32 @@
-// name: Dell C3765DNF Printer
-// author: Brad Campbell
-// email:  bradjc@umich.edu
-
-/*
+/**
  * Dell C3765DNF Printer
  * =====================
  *
  * Get information from the printer.
+ *
+ * @module
+ * @display-name Dell C3765DNF Printer
+ * @author Brad Campbell <bradjc@umich.edu>
  */
 
 var http = require('httpClient');
 
+function setup () {
+	createPort('Cyan', ['read']);
+	createPort('Magenta', ['read']);
+	createPort('Yellow', ['read']);
+	createPort('Black', ['read']);
+	createPort('Waste', ['read']);
+	createPort('Tray1', ['read']);
+}
+
 function* init () {
-	createPort('Cyan');
-	createPort('Magenta');
-	createPort('Yellow');
-	createPort('Black');
-	createPort('Waste');
-	createPort('Tray1');
+	addOutputHandler('Cyan', Cyan_output);
+	addOutputHandler('Magenta', Magenta_output);
+	addOutputHandler('Yellow', Yellow_output);
+	addOutputHandler('Black', Black_output);
+	addOutputHandler('Waste', Waste_output);
+	addOutputHandler('Tray1', Tray1_output);
 }
 
 function* get_status_page () {
@@ -48,44 +57,16 @@ function find_in_page (page, field) {
 	return page.substr(start_tag, end_tag-start_tag);
 }
 
-Cyan.output = function*  () {
+function* get_status (port, search) {
 	var status_html = yield* get_status_page();
-	var status = find_in_page(status_html, 'Cyan Drum Cartridge');
+	var status = find_in_page(status_html, search);
 	console.log(status);
-	return status;
+	send(port, status);
 }
 
-Magenta.output = function* () {
-	var status_html = yield* get_status_page();
-	var status = find_in_page(status_html, 'Magenta Drum Cartridge');
-	console.log(status);
-	return status;
-}
-
-Yellow.output = function* () {
-	var status_html = yield* get_status_page();
-	var status = find_in_page(status_html, 'Yellow Drum Cartridge');
-	console.log(status);
-	return status;
-}
-
-Black.output = function* () {
-	var status_html = yield* get_status_page();
-	var status = find_in_page(status_html, 'Black Drum Cartridge');
-	console.log(status);
-	return status;
-}
-
-Waste.output = function* () {
-	var status_html = yield* get_status_page();
-	var status = find_in_page(status_html, 'Waste Toner Box');
-	console.log(status);
-	return status;
-}
-
-Tray1.output = function* () {
-	var status_html = yield* get_status_page();
-	var status = find_in_page(status_html, '35%>Output Tray');
-	console.log(status);
-	return status;
-}
+var Cyan_output    = function* () { yield* get_status('Cyan',    'Cyan Drum Cartridge') };
+var Magenta_output = function* () { yield* get_status('Magenta', 'Magenta Drum Cartridge') };
+var Yellow_output  = function* () { yield* get_status('Yellow',  'Yellow Drum Cartridge') };
+var Black_output   = function* () { yield* get_status('Black',   'Black Drum Cartridge') };
+var Waste_output   = function* () { yield* get_status('Waste',   'Waste Toner Box') };
+var Tray1_output   = function* () { yield* get_status('Tray1',   '35%>Output Tray') };
