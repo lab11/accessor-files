@@ -1,0 +1,15 @@
+{
+	"extends": "/sensor/temperature",
+	"ports": {
+		"Humidity": {
+			"type": "numeric",
+			"unit": "relative_humidity",
+			"attributes": ["read", "eventPeriodic"]
+		},
+		"Pressure": {
+			"type": "numeric",
+			"unit": "mbars",
+			"attributes": ["read", "eventPeriodic"]
+		}
+	}
+}

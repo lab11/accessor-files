@@ -23,19 +23,8 @@ var LK_pressure    = null;
 var LK_light       = null;
 
 function setup () {
-	// provide_interface('/onoff');
-	createPort('Temperature', ['read', 'event'], {
-		type: 'numeric',
-		units: 'degrees_celcius'
-	});
-	createPort('Humidity', ['read', 'event'], {
-		type: 'numeric',
-		units: 'relative_humidity'
-	});
-	createPort('Pressure', ['read', 'event'], {
-		type: 'numeric',
-		units: 'mbars'
-	});
+	provideInterface('/sensor/ambient');
+
 	createPort('Light', ['read', 'event'], {
 		type: 'numeric',
 		units: 'lux'
