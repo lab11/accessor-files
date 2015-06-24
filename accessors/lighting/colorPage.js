@@ -9,20 +9,32 @@
  * @author Branden Ghena <brghena@umich.edu>
  */
 
+var http = require('httpClient');
 
 var post_url;
 
+function setup () {
+	provideInterface('/lighting/light');
+}
+
 function* init () {
-    provide_interface('/lighting/light');
+	addInputHandler('Power', Power_input);
+	addOutputHandler('Power', Power_output);
 
-    post_url = get_parameter('post_url');
+    post_url = getParameter('post_url');
 }
 
-Power.input = function* (state) {
-    yield* rt.http.request(post_url, "POST", {'Content-Type': 'application/x-www-form-urlencoded'}, (state)?'color=ffffff':'color=000000', 0);
+var Power_input = function* (state) {
+	var post = {
+		method: 'POST',
+		url: post_url,
+		headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+		body: (state)?'color=ffffff':'color=000000'
+	}
+    yield* http.request_fn(post);
 }
 
-Power.output = function* () {
-    return '???';
+var Power_output = function* () {
+    return false;
 }
 

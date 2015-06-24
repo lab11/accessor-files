@@ -28,21 +28,21 @@ function* init () {
 	addOutputHandler('/lighting/brightness.Brightness', Brightness_output);
 }
 
-Power_input = function* (state) {
+var Power_input = function* (state) {
 	yield* coap.post('coap://['+ip_addr+']/onoff/Power', (state)?'true':'false');
 }
 
-Power_output = function* () {
+var Power_output = function* () {
 	var val = (yield* coap.get('coap://['+ip_addr+']/onoff/Power')).body.toString('utf-8');
 	send('/lighting/light.Power', val == 'true');
 }
 
-Brightness_input = function* (brightness) {
+var Brightness_input = function* (brightness) {
 	var bri = Math.round(brightness / 2.55);
 	yield* coap.post('coap://['+ip_addr+']/sdl/luxapose/DutyCycle', bri.toString());
 }
 
-Brightness_output = function* () {
+var Brightness_output = function* () {
 	var bri = parseInt((yield* coap.get('coap://['+ip_addr+']/sdl/luxapose/DutyCycle')).body.toString('utf-8'));
 	send('/lighting/brightness.Brightness', bri * 2.55);
 }

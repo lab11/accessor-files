@@ -7,6 +7,9 @@
  * @author Brad Campbell <bradjc@umich.edu>
  */
 
+var http = require('httpClient');
+var ssdp = require('ssdpClient');
+var dns = require('dnsClient');
 
 var set_body = '<?xml version="1.0" encoding="utf-8"?>\
 <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">\
@@ -25,34 +28,64 @@ var get_body = '<?xml version="1.0" encoding="utf-8"?>\
  </s:Body>\
 </s:Envelope>';
 
-var url;
+var host;
 var port = null;
 
 function* find_wemo_port () {
-	// WeMo ports like to change
-	var start_port = 49152;
 
-	for (var i=0; i<5; i++) {
-		try {
-			var content = yield* rt.http.request(url+':'+(start_port+i)+'/setup.xml', 'GET', null, '', 300);
-			port = start_port + i;
-			return;
-		} catch (err) {
+	var timeout_token;
+
+	// First we need to resolve the host so we get an IP address that we
+	// can work with. SSDP gives us back IP addresses, so if the user passed
+	// in a hostname we need the IP address. Note, this will also work
+	// with just an IP address.
+	var dns_client = new dns.Client();
+	var ip = yield* dns_client.lookup(host);
+	console.info('IP address for host is: ' + ip);
+
+	// Now look for the correct device and get its port
+	var ssdp_client = new ssdp.Client();
+	ssdp_client.on('response', function (headers, statusCode, rinfo) {
+		if (port == null) {
+			// Haven't found it yet
+			if ('LOCATION' in headers) {
+				var no_http = headers.LOCATION.substring(7, headers.LOCATION.length);
+
+				var res = no_http.split(':');
+				var found_ip = res[0];
+
+				if (found_ip == ip) {
+					port = res[1].substring(0, 5);
+					clearTimeout(timeout_token);
+					console.info('WeMo is currently using port ' + port);
+				}
+			}
 		}
+	});
+
+	function search () {
+		ssdp_client.search('urn:Belkin:service:manufacture:1');
 	}
-	error('Could not connect to the WeMo. Perhaps it\'s not online?');
+
+	timeout_token = setInterval(search, 10000);
+	search();
 }
 
 function* get_power_state () {
-	var headers = {}
-	headers['SOAPACTION'] = '"urn:Belkin:service:basicevent:1#GetBinaryState"';
-	headers['Content-Type'] = 'text/xml; charset="utf-8"';
+	var headers = {
+		'SOAPACTION': '"urn:Belkin:service:basicevent:1#GetBinaryState"',
+		'Content-Type': 'text/xml; charset="utf-8"',
+	}
 
-	var response = yield* rt.http.request(url+':'+port+'/upnp/control/basicevent1', 'POST', headers, get_body, 0);
-	rt.log.log(response);
+	var response = (yield* http.request({
+		url: 'http://'+host+':'+port+'/upnp/control/basicevent1',
+		method: 'POST',
+		headers: headers,
+		body: get_body
+	})).body;
 
-	var start = response.indexOf('BinaryState');
-	var power_state = response.substr(start+12, 1);
+	var start = response.indexOf('<BinaryState>');
+	var power_state = response.substr(start+13, 1);
 
 	// Put this back when the rt. library supports it
 	// var power_state = getXMLValue(response, 'BinaryState');
@@ -62,38 +95,49 @@ function* get_power_state () {
 }
 
 function* set_power_state (state) {
-	var headers = {}
-	headers['SOAPACTION'] = '"urn:Belkin:service:basicevent:1#SetBinaryState"';
-	headers['Content-Type'] = 'text/xml; charset="utf-8"';
+	var headers = {
+		'SOAPACTION': '"urn:Belkin:service:basicevent:1#SetBinaryState"',
+		'Content-Type': 'text/xml; charset="utf-8"',
+	}
 
 	var control = set_body.replace('{binstate}', (state) ? '1' : '0');
 
-	yield* rt.http.request(url+':'+port+'/upnp/control/basicevent1', 'POST', headers, control, 0);
+	yield* http.request({
+		url: 'http://'+host+':'+port+'/upnp/control/basicevent1',
+		method: 'POST',
+		headers: headers,
+		body: control
+	});
 }
 
+function setup () {
+	provideInterface('/onoff');
+	createPort('Power', ['write', 'read']);
+}
 
 function* init () {
+	addInputHandler('Power', Power_input);
+	addOutputHandler('Power', Power_output);
 
-	// INTERFACES
+	host = getParameter('wemo_host');
+	port = getParameter('wemo_port', null);
 
-	provide_interface('/onoff');
-
-	url = get_parameter('wemo_url');
-
-	// yield* find_wemo_port();
-	// yield* get_power_state();
+	if (port === null) {
+		yield* find_wemo_port();
+	}
 }
 
-Power.input = function* (state) {
+var Power_input = function* (state) {
 	if (port == null) {
-		error('WeMo not found. Can not control the relay.');
+		throw 'WeMo not found. Can not control the relay.';
 	}
 	yield* set_power_state(state);
 }
 
-Power.output = function* () {
+var Power_output = function* () {
 	if (port == null) {
-		error('WeMo not found. Can not read the relay.');
+		throw 'WeMo not found. Can not read the relay.';
 	}
-	return yield* get_power_state();
+	var p = yield* get_power_state();
+	send('Power', p);
 }
