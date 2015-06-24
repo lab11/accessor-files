@@ -40,9 +40,7 @@ function find_in_xml (xml, tag) {
 }
 
 function setup () {
-  // provideInterface('/av/videodevice');
-
-  createPort('Power', ['read', 'write']);
+  provideInterface('/av/videodevice');
 
   // Select the video source for the projector
   createPort('Input', ['write', 'read'], {
