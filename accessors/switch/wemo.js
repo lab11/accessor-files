@@ -64,7 +64,7 @@ function* find_wemo_port () {
 	});
 
 	function search () {
-		ssdp_client.search('urn:Belkin:service:manufacture:1');
+		ssdp_client.search('urn:Belkin:service:basicevent:1');
 	}
 
 	timeout_token = setInterval(search, 10000);
