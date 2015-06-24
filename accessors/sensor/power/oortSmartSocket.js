@@ -2,7 +2,12 @@
  * Oort Smart Socket
  * =================
  *
- * BLE power meter and load switch.
+ * The Oort Smart Socket is a BLE-based power meter and load switch.
+ * When connected, the Oort provides power state and power measurements
+ * every second.
+ *
+ * See [its product page](https://oort.in/shop/products/oort-smartsocket/)
+ * for more information.
  *
  * @module
  * @author Brad Campbell <bradjc@umich.edu>
