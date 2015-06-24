@@ -20,9 +20,6 @@ function setup () {
   createPort('Z', ['write', 'eventperiodic'], {
     type: 'numeric'
   });
-  createPort('Position', ['write'], {
-    type: 'object'
-  });
   createPortBundle('Position', ['X', 'Y', 'Z']);
 }
 
