@@ -9,6 +9,8 @@
  */
 
 var http = require('httpClient');
+var ssdp = require('ssdpClient');
+var dns = require('dnsClient');
 
 // XML headers and footers for HTTP requests
 var postbodyheader = [
@@ -21,26 +23,69 @@ var postbodyfooter = ['</s:Body>',
 
 // device parameters
 var ip_addr;
-var port;
+var port = null;
 var id;
 
 function setup () {
-    // INTERFACES
     provideInterface('/lighting/light');
     provideInterface('/lighting/brightness');
-
-    //XXX: This works for testing control, but discovery is necessary for real usefulness
-    ip_addr = getParameter('ip_addr');
-    port = getParameter('port');
-    id = getParameter('id');
 }
 
 function* init () {
-    addInputHandler('/lighting/light.Power', Powerinput);
-    addInputHandler('/lighting/brightness.Brightness', Brightnessinput);
+    addInputHandler('Power', Powerinput);
+    addInputHandler('Brightness', Brightnessinput);
 
-    addOutputHandler('/lighting/light.Power', Poweroutput);
-    addOutputHandler('/lighting/brightness.Brightness', Brightnessoutput);
+    addOutputHandler('Power', Poweroutput);
+    addOutputHandler('Brightness', Brightnessoutput);
+
+    //XXX: This works for testing control, but discovery is necessary for real usefulness
+    ip_addr = getParameter('ip_addr');
+    port = getParameter('port', null);
+    id = getParameter('id');
+
+    if (port === null) {
+        yield* find_wemo_link_port();
+    }
+}
+
+function* find_wemo_link_port () {
+
+    var timeout_token;
+
+    // First we need to resolve the host so we get an IP address that we
+    // can work with. SSDP gives us back IP addresses, so if the user passed
+    // in a hostname we need the IP address. Note, this will also work
+    // with just an IP address.
+    var dns_client = new dns.Client();
+    var ip = yield* dns_client.lookup(ip_addr);
+    console.info('IP address for host is: ' + ip);
+
+    // Now look for the correct device and get its port
+    var ssdp_client = new ssdp.Client();
+    ssdp_client.on('response', function (headers, statusCode, rinfo) {
+        if (port == null) {
+            // Haven't found it yet
+            if ('LOCATION' in headers) {
+                var no_http = headers.LOCATION.substring(7, headers.LOCATION.length);
+
+                var res = no_http.split(':');
+                var found_ip = res[0];
+
+                if (found_ip == ip) {
+                    port = res[1].substring(0, 5);
+                    clearTimeout(timeout_token);
+                    console.info('WeMo is currently using port ' + port);
+                }
+            }
+        }
+    });
+
+    function search () {
+        ssdp_client.search('urn:Belkin:service:bridge:1');
+    }
+
+    timeout_token = setInterval(search, 10000);
+    search();
 }
 
 function* discover_light_by_name (name) {
@@ -76,31 +121,41 @@ function* set_light_state (capability_id, capability_value) {
     body = body.replace('{deviceid}', id);
     body = body.replace('{capabilityid}', capability_id);
     body = body.replace('{capabilityvalue}', capability_value);
-    var response = (yield* http.request(url, 'POST', headers, body, 0)).body;
+    var options = {
+        url: url,
+        method: 'POST',
+        headers: headers,
+        body: body
+    }
+    var response = (yield* http.request(options)).body;
 }
 
-// lighting.light.Power.input = function* (state) {
 var Powerinput = function* (state) {
+    if (port === null) {
+        throw('Have not found the WeMo link.');
+    }
     yield* set_light_state('10006', (state)?'1':'0');
 }
 
 //XXX: Implement me!
-// lighting.light.Power.output = function* () {
 var Poweroutput = function* () {
-	//var val = yield* rt.coap.get('coap://['+ip_addr+']/onoff/Power');
-	//return val == 'true';
-    send('/lighting/light.Power', true);
+    if (port === null) {
+        throw('Have not found the WeMo link.');
+    }
+    send('Power', true);
 }
 
-// lighting.brightness.Brightness.input = function* (brightness) {
 var Brightnessinput = function* (brightness) {
+    if (port === null) {
+        throw('Have not found the WeMo link.');
+    }
     yield* set_light_state('10008', brightness.toString()+":0");
 }
 
 //XXX: Implement me!
-// lighting.brightness.Brightness.output = function* () {
 var Brightnessoutput = function* () {
-	//var bri = parseInt(yield* rt.coap.get('coap://['+ip_addr+']/sdl/luxapose/DutyCycle'));
-	//return bri * 2.55;
-    send('/lighting/brightness.Brightness', 0);
+    if (port === null) {
+        throw('Have not found the WeMo link.');
+    }
+    send('Brightness', 0);
 }
