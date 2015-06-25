@@ -29,14 +29,8 @@ var notti_characteristic = null;
 var last_color = 'ffffff';
 
 function setup () {
-	// provide_interface('/onoff');
-	createPort('Power', ['write'], {
-		type: 'bool'
-	});
-
-	createPort('Color', ['write'], {
-		type: 'color'
-	});
+	provideInterface('/onoff');
+	provideInterface('/lighting/rgb');
 
 	createPort('Fade', ['write'], {
 		type: 'color'
