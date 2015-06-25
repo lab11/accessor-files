@@ -22,7 +22,6 @@ function* on_each (body) {
 }
 
 function setup () {
-	provideInterface('/lighting/light');
 	provideInterface('/lighting/hue');
 
 	createPort('Bridge', ['read']);

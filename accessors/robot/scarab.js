@@ -93,9 +93,15 @@ function* init () {
 
 // Send a position to the robot
 position = function* (val) {
-  var coord_x = parseFloat(val.x);
-  var coord_y = parseFloat(val.y);
-  var coord_z = parseFloat(val.z);
+  var coord_x = parseFloat(val.X);
+  var coord_y = parseFloat(val.Y);
+  var coord_z = parseFloat(val.Z);
+
+  if (isNaN(coord_x)) coord_x = 0;
+  if (isNaN(coord_y)) coord_y = 0;
+  if (isNaN(coord_z)) coord_z = 0;
+
+  console.info('Moving to: ' + coord_x + ',' + coord_y + ',' + coord_z);
 
   var msg = {
     header: {
