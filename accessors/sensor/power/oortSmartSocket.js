@@ -39,11 +39,11 @@ var LK_pf      = null;
 var LK_freq    = null;
 
 function setup () {
-	// provide_interface('/onoff');
-	createPort('Power', ['read', 'write', 'eventPeriodic']);
+	provideInterface('/onoff');
+	provideInterface('/sensor/power');
+
 	createPort('Voltage', ['read', 'eventPeriodic']);
 	createPort('Current', ['read', 'eventPeriodic']);
-	createPort('Watts', ['read', 'eventPeriodic']);
 	createPort('PowerFactor', ['read', 'eventPeriodic']);
 	createPort('Frequency', ['read', 'eventPeriodic']);
 }
@@ -51,11 +51,11 @@ function setup () {
 function* init () {
 
 	// Connect functions
-	addInputHandler('Power', inPower);
-	addOutputHandler('Power', outPower);
+	addInputHandler('/onoff.Power', inPower);
+	addOutputHandler('/onoff.Power', outPower);
 	addOutputHandler('Voltage', outVoltage);
 	addOutputHandler('Current', outCurrent);
-	addOutputHandler('Watts', outWatts);
+	addOutputHandler('/sensor/power.Power', outWatts);
 	addOutputHandler('PowerFactor', outPowerFactor);
 	addOutputHandler('Frequency', outFrequency);
 
@@ -165,10 +165,10 @@ function* init () {
 			LK_pf      = convert_oort_to_float(data.slice(10,13));
 			LK_freq    = convert_oort_to_float(data.slice(13,16));
 
-			send('Power', LK_power);
+			send('/onoff.Power', LK_power);
 			send('Voltage', LK_voltage);
 			send('Current', LK_current);
-			send('Watts', LK_watts);
+			send('/sensor/power.Power', LK_watts);
 			send('PowerFactor', LK_pf);
 			send('Frequency', LK_freq);
 		});
@@ -202,7 +202,6 @@ function convert_oort_to_float (bytes) {
 	return parseFloat(val_str);
 }
 
-//onoff.Power.input = function* (state) {
 inPower = function* (state) {
 	if (oort_sensor_characteristic == null) {
 		console.error('No connected OORT. Cannot write.');
@@ -221,10 +220,10 @@ function any_output (val) {
 	return val;
 }
 
-outPower       = function () { return send('Power', any_output(LK_power)); };
+outPower       = function () { return send('/onoff.Power', any_output(LK_power)); };
 outVoltage     = function () { return send('Voltage', any_output(LK_voltage)); };
 outCurrent     = function () { return send('Current', any_output(LK_current)); };
-outWatts       = function () { return send('Watts', any_output(LK_watts)); };
+outWatts       = function () { return send('/sensor/power.Power', any_output(LK_watts)); };
 outPowerFactor = function () { return send('PowerFactor', any_output(LK_pf)); };
 outFrequency   = function () { return send('Frequency', any_output(LK_freq)); };
 
