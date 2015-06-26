@@ -50,9 +50,7 @@ function* set_bulb_parameter (params) {
 function setup () {
 	provideInterface('/lighting/hue');
 
-	createPortBundle('PCB', ['Power', 'Color', 'Brightness'], {
-		type: 'object'
-	});
+	createPortBundle('PCB', ['Power', 'Color', 'Brightness']);
 }
 
 function* init () {
