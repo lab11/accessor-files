@@ -204,7 +204,6 @@ function convert_oort_to_float (bytes) {
 
 inPower = function* (state) {
 	if (oort_sensor_characteristic == null) {
-		console.error('No connected OORT. Cannot write.');
 		throw 'No connected OORT. Cannot write.';
 	}
 	var val = (state) ? 0x1 : 0x0;
@@ -213,7 +212,6 @@ inPower = function* (state) {
 
 function any_output (val) {
 	if (val == null) {
-		console.error('No connected OORT. Cannot read.');
 		throw 'No connected OORT. Cannot read.';
 	}
 
