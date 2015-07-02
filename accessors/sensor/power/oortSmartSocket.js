@@ -65,8 +65,7 @@ function* init () {
 
 	// Using BLE may fail
 	if (ble_hw === null) {
-		console.error('Unable to get access to a BLE device.');
-		return;
+		throw 'Unable to get access to a BLE device.';
 	}
 
 	// Start the scan for any devices that advertise the OORT sensor
